@@ -1,0 +1,1505 @@
+<title>Fluxus</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: una sola columna tipo teléfono (máx. 440px), centrada en pantallas grandes, barra de navegación fija abajo */
+:root{
+  color-scheme:dark;
+  --bg:#0B1226; --surface:#111A38; --surface-2:#0E1630; --fg:#EAF0FF; --muted:#8D9BC4; --line:#1F2C5A;
+  --accent:#4FE3D4; --accent-soft:#123545; --accent-fg:#0B1226;
+  --pos:#4ADE9A; --pos-soft:#11322C; --neg:#FF6F91; --neg-soft:#3A1832; --warn:#F5C26B; --warn-soft:#33291A;
+  --disabled:#24305A; --disabled-fg:#6F7DA8; --hero:#16224A; --hero-fg:#EAF0FF; --hero-muted:#8D9BC4; --hero-line:#263770;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767; --s-other:#566176;
+  --font-display:"Sora", "Segoe UI", system-ui, sans-serif;
+  --font-body:"Sora", "Segoe UI", Roboto, system-ui, sans-serif;
+  --r:18px;
+}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+button,input,select{font:inherit;color:inherit}
+.app{max-width:440px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:20px 24px}
+.app.has-nav{padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px))}
+h1,h2{font-family:var(--font-display);font-weight:700;letter-spacing:-.01em;text-wrap:balance;margin:0}
+h1{font-size:1.75rem;line-height:1.15}
+h2{font-size:1.3rem;line-height:1.2}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.875rem}
+.stack{display:flex;flex-direction:column;gap:16px}
+.stack-s{display:flex;flex-direction:column;gap:8px}
+.grow{flex:1}
+.num{font-variant-numeric:tabular-nums}
+
+/* Botones */
+.btn{appearance:none;border:0;border-radius:12px;min-height:52px;padding:0 18px;font-weight:600;font-size:1rem;cursor:pointer;width:100%;
+  display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s, transform .05s}
+.btn:active{transform:scale(.99)}
+.btn:focus-visible,.link:focus-visible,.icon-btn:focus-visible,.opt:focus-visible,.tab:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn-primary{background:var(--accent);color:var(--accent-fg)}
+.btn:disabled{background:var(--disabled);color:var(--disabled-fg);cursor:not-allowed;border-color:transparent}
+.btn-secondary{background:var(--surface);color:var(--fg);border:1.5px solid var(--line)}
+.btn-ghost{background:transparent;color:var(--accent)}
+.btn-sm{min-height:44px;font-size:.95rem}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.link{background:none;border:0;padding:4px 0;color:var(--accent);font-weight:600;cursor:pointer;font-size:.95rem}
+.icon-btn{background:none;border:0;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;cursor:pointer;color:var(--fg);margin-left:-10px}
+.icon-btn svg{width:24px;height:24px}
+
+/* Campos */
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:.875rem;font-weight:600}
+.field label .opt-tag{font-weight:400;color:var(--muted)}
+.input-wrap{display:flex;align-items:center;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;min-height:52px;padding:0 14px;gap:8px}
+.input-wrap:focus-within{border-color:var(--accent)}
+.input-wrap input,.input-wrap select{flex:1;min-width:0;border:0;background:transparent;outline:0;font-size:1rem;padding:12px 0}
+.input-wrap select{cursor:pointer}
+.input-wrap select option,.input-wrap select optgroup{background:var(--surface);color:var(--fg)}
+.prefix{color:var(--muted);font-weight:600;white-space:nowrap}
+.hint{font-size:.85rem;color:var(--muted);min-height:1.2em}
+.msg{font-size:.9rem;font-weight:600;min-height:1.3em}
+.msg.ok{color:var(--pos)} .msg.bad{color:var(--neg)}
+.error-box{background:var(--neg-soft);color:var(--neg);border-radius:12px;padding:12px 14px;font-size:.9rem;font-weight:500}
+.info-box{background:var(--pos-soft);color:var(--pos);border-radius:12px;padding:12px 14px;font-size:.9rem;font-weight:500}
+.warn-box{background:var(--warn-soft);color:var(--warn);border-radius:12px;padding:14px;font-size:.92rem;display:flex;flex-direction:column;gap:12px}
+.warn-box .field label{color:var(--warn)}
+.note{background:var(--surface-2);border:1px dashed var(--line);border-radius:12px;padding:12px 14px;font-size:.85rem;color:var(--muted)}
+.note b{color:var(--fg);font-weight:600}
+.big-amount .input-wrap{min-height:64px}
+.big-amount input{font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums}
+.big-amount .prefix{font-size:1.3rem}
+
+/* Bienvenida */
+.welcome{flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:32px;padding-top:6vh}
+.brand{display:flex;align-items:center;gap:12px}
+.mark{width:52px;height:52px;border-radius:16px;background:var(--hero);display:grid;place-items:center}
+.mark svg{width:24px;height:36px}
+.brand-name{font-family:var(--font-display);font-weight:800;font-size:1.3rem;letter-spacing:.06em}
+.welcome h1{font-size:2.3rem;margin-top:28px}
+.welcome .lead{margin-top:12px;font-size:1.05rem;color:var(--muted);max-width:30ch}
+
+.topbar{display:flex;align-items:center;gap:4px;min-height:44px;margin-bottom:8px}
+
+/* Configuración inicial */
+.progress{display:flex;gap:6px}
+.progress span{height:5px;flex:1;border-radius:3px;background:var(--line)}
+.progress span.on{background:var(--accent)}
+.step-label{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.card{background:var(--surface);border-radius:var(--r);padding:20px;border:1px solid var(--line)}
+.ob-msg{font-size:1.1rem;line-height:1.5}
+.ob-msg p+p{margin-top:8px}
+.two{display:flex;flex-direction:column;gap:12px}
+.two .item{display:flex;gap:14px;align-items:flex-start}
+.two .badge{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;flex-shrink:0}
+.two .badge svg{width:22px;height:22px}
+.two .have{background:var(--pos-soft);color:var(--pos)}
+.two .owe{background:var(--accent-soft);color:var(--accent)}
+.two h3{margin:0 0 2px;font-size:1rem}
+.two p{color:var(--muted);font-size:.93rem}
+.opts{display:grid;gap:8px}
+.opt{display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;text-align:left;width:100%}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt .code{font-weight:700;width:44px;font-variant-numeric:tabular-nums}
+.opt .sample{margin-left:auto;color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.acc-list{display:flex;flex-direction:column}
+.acc-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.acc-row:last-child{border-bottom:0}
+.acc-row span:first-child{min-width:0;overflow-wrap:anywhere}
+.acc-row span:last-child{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.acc-row .kind{display:block;font-size:.8rem;color:var(--muted);font-weight:400}
+.congrats{background:var(--hero);color:var(--hero-fg);border:0;text-align:center;padding:28px 20px}
+.congrats .lbl{color:var(--hero-muted);font-size:.9rem}
+.congrats .big{font-family:var(--font-display);font-size:2.4rem;font-weight:700;line-height:1.1;margin-top:6px;overflow-wrap:anywhere}
+.congrats .check{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.14);display:grid;place-items:center;margin:0 auto 16px}
+
+/* Inicio */
+.header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+.header .who{min-width:0}
+.header .who p:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hello{font-size:1.25rem;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:700;display:grid;place-items:center;border:0;cursor:pointer;flex-shrink:0}
+.balance{background:var(--hero);color:var(--hero-fg);border-radius:20px;padding:22px 20px}
+.balance .lbl{color:var(--hero-muted);font-size:.9rem;font-weight:500}
+.balance .big{font-family:var(--font-display);font-size:2.3rem;font-weight:700;line-height:1.1;margin-top:6px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.balance .sub{color:var(--hero-muted);font-size:.85rem;margin-top:8px}
+.balance .split{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--hero-line)}
+.balance .split p:first-child{color:var(--hero-muted);font-size:.8rem}
+.balance .split p:last-child{font-weight:600;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sum{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;min-width:0}
+.sum .top{display:flex;align-items:center;gap:8px;font-weight:600;font-size:.9rem}
+.sum .ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center}
+.sum .ico svg{width:18px;height:18px}
+.sum.in .ico{background:var(--pos-soft);color:var(--pos)} .sum.in .top{color:var(--pos)}
+.sum.out .ico{background:var(--neg-soft);color:var(--neg)} .sum.out .top{color:var(--neg)}
+.sum .amt{color:var(--muted);font-weight:700;font-size:1.15rem;margin-top:10px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.sum .per{color:var(--muted);font-size:.78rem}
+.actions{display:flex;flex-direction:column;gap:10px}
+.btn-act{background:var(--surface);color:var(--fg);border:1px solid var(--line);justify-content:flex-start;gap:12px;padding:0 16px;min-height:56px;border-radius:16px}
+.dot{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:1.25rem;font-weight:700;color:var(--bg);flex-shrink:0}
+.dot.out{background:var(--neg)} .dot.in{background:var(--pos)}
+.balance{border:1px solid var(--hero-line)}
+.freebar{height:8px;border-radius:4px;background:var(--bg);margin-top:16px;overflow:hidden}
+.freebar span{display:block;height:100%;background:var(--accent);border-radius:4px}
+.balance .split{border-top:0;padding-top:0;margin-top:8px}
+.section-title{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.tip{display:flex;flex-direction:column;gap:10px;background:var(--accent-soft);border-radius:var(--r);padding:16px}
+.tip h3{margin:0;font-size:1rem}
+.tip p{font-size:.92rem;color:var(--fg)}
+.tip .btn-row .btn{min-height:42px;font-size:.92rem}
+.soft-note{font-size:.88rem;color:var(--muted);padding:0 4px}
+
+/* Lista de movimientos */
+.movs{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:4px 14px}
+.mov{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.mov:last-child{border-bottom:0}
+.mov .mi{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex-shrink:0}
+.mov .mi svg{width:18px;height:18px}
+.mov.in .mi{background:var(--pos-soft);color:var(--pos)}
+.mov.out .mi{background:var(--neg-soft);color:var(--neg)}
+.mov.pay .mi{background:var(--accent-soft);color:var(--accent)}
+.mov .mt{flex:1;min-width:0}
+.mov .mt p:first-child{font-weight:600;overflow-wrap:anywhere}
+.mov .mt p:last-child{font-size:.8rem;color:var(--muted);overflow-wrap:anywhere}
+.mov .ma{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mov.in .ma{color:var(--pos)} .mov.out .ma{color:var(--neg)} .mov.pay .ma{color:var(--muted)}
+
+/* Por pagar */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-weight:600;font-size:.9rem;cursor:pointer}
+.chip.sel{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+.total-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.total-row .v{font-family:var(--font-display);font-size:1.6rem;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+
+/* Cuentas */
+.acc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.acc-card{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-width:0}
+.acc-card:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.acc-card .an{font-weight:600;overflow-wrap:anywhere}
+.acc-card .aa{font-family:var(--font-display);font-weight:700;font-size:1.15rem;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.acc-card .am{font-size:.78rem;color:var(--muted)}
+.acc-card.owe .aa{color:var(--muted)}
+.acc-head{display:flex;flex-direction:column;gap:4px}
+.acc-head h1{overflow-wrap:anywhere}
+.acc-big{font-family:var(--font-display);font-size:2.2rem;font-weight:700;line-height:1.1;margin-top:6px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.acc-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* Pago dividido */
+.flabel{font-size:.875rem;font-weight:600}
+.split-link{background:none;border:0;padding:6px 0;color:var(--accent);font-weight:600;font-size:.95rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;align-self:flex-start}
+.split-link:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+.muted-link{color:var(--muted);font-weight:500}
+.split-box{display:flex;flex-direction:column;gap:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.srow{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr) 32px;gap:8px;align-items:center}
+.srow .input-wrap{min-height:48px;padding:0 10px}
+.s-amt input{text-align:right;font-variant-numeric:tabular-nums}
+.s-del{margin:0;width:32px;height:44px;font-size:1.5rem;color:var(--muted)}
+.s-hint{grid-column:1 / -1;font-size:.82rem;color:var(--neg);margin-top:-4px}
+.split-sum{font-size:.9rem;color:var(--muted)}
+.split-sum.done{color:var(--pos);font-weight:600}
+.split-sum.bad{color:var(--neg)}
+
+/* Informe */
+.donut-wrap{display:flex;justify-content:center}
+.donut{width:min(240px,70vw);height:auto;display:block}
+.donut .seg{cursor:pointer;transition:opacity .15s, stroke-width .15s}
+.donut .seg.dim{opacity:.3}
+.d-lbl{font-size:10px;fill:var(--muted);font-family:var(--font-body)}
+.d-val{font-size:17px;font-weight:700;fill:var(--fg);font-family:var(--font-display)}
+.legend{display:flex;flex-direction:column}
+.lg{display:grid;grid-template-columns:14px minmax(0,1fr) auto auto;align-items:center;gap:10px;background:none;border:0;border-bottom:1px solid var(--line);padding:10px 2px;text-align:left;cursor:pointer;width:100%}
+.lg:last-child{border-bottom:0}
+.lg.dim{opacity:.45}
+.lg.on .ln{font-weight:700}
+.sw{width:14px;height:14px;border-radius:4px;display:inline-block;flex-shrink:0}
+.ln{overflow-wrap:anywhere;min-width:0}
+.lp{color:var(--muted);font-size:.85rem;font-variant-numeric:tabular-nums}
+.la{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cbars{display:flex;flex-direction:column;gap:4px}
+.cbar{background:none;border:0;padding:8px 0;display:flex;flex-direction:column;gap:6px;text-align:left;cursor:pointer;width:100%}
+.cb-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.track{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden;display:block}
+.fill{display:block;height:100%;border-radius:4px}
+.cmp{display:flex;flex-direction:column}
+.cmp-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.cmp-row:last-child{border-bottom:0}
+.cmp-row.total .ln{font-weight:700}
+.cmp-l{display:flex;align-items:center;gap:8px;min-width:0}
+.cmp-v{grid-column:1;padding-left:22px}
+.cmp-row.total .cmp-v{padding-left:0}
+.cmp-d{grid-column:2;grid-row:1 / span 2;align-self:center;text-align:right}
+.diff{font-weight:600;font-size:.88rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.diff.up{color:var(--neg)} .diff.down{color:var(--pos)} .diff.eq{color:var(--muted)}
+.evo{width:100%;height:auto;display:block;min-width:280px}
+.evo .ebar{cursor:pointer}
+.evo path.dim{opacity:.4}
+.e-lbl{font-size:11px;fill:var(--muted);font-family:var(--font-body)}
+.e-lbl.on{fill:var(--fg);font-weight:700}
+.evo-read{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.evo-read .v{font-family:var(--font-display);font-size:1.4rem;font-weight:700;font-variant-numeric:tabular-nums}
+.lg:focus-visible,.cbar:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+
+/* Movimientos */
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.frow .input-wrap{min-width:0}
+.frow select{text-overflow:ellipsis}
+.input-wrap .prefix svg{display:block}
+.day{font-size:.82rem;font-weight:600;color:var(--muted);padding:0 4px}
+[data-mov]{cursor:pointer}
+[data-mov]:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+.acc-big.in{color:var(--pos)} .acc-big.out{color:var(--neg)}
+.acc-row .dv{text-align:right;font-weight:600;white-space:normal!important;overflow-wrap:anywhere;min-width:0}
+.screen.still{animation:none!important}
+
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:10px;padding:48px 8px}
+.empty .ico{width:64px;height:64px;border-radius:18px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+.empty .ico svg{width:30px;height:30px}
+.pill{display:inline-block;background:var(--surface-2);border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:3px 10px;font-size:.8rem;font-weight:600}
+
+/* Navegación inferior */
+.nav{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom, 0px);padding-left:max(8px, env(safe-area-inset-left, 0px));padding-right:max(8px, env(safe-area-inset-right, 0px));z-index:5}
+.nav-inner{max-width:440px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.tab{background:none;border:0;padding:10px 4px 12px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:.75rem;font-weight:600;cursor:pointer}
+.tab svg{width:24px;height:24px}
+.tab .pillbg{padding:3px 18px;border-radius:999px;display:grid;place-items:center}
+.tab.on{color:var(--accent)} .tab.on .pillbg{background:var(--accent-soft)}
+
+.scrim{position:fixed;inset:0;background:rgba(8,14,24,.45);z-index:10;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:440px;border-radius:20px 20px 0 0;
+  padding-block:20px calc(20px + env(safe-area-inset-bottom, 0px));padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(100px + env(safe-area-inset-bottom, 0px));background:var(--fg);color:var(--bg);
+  padding:12px 16px;border-radius:12px;font-size:.9rem;font-weight:500;z-index:20;max-width:calc(100% - 32px);text-align:center}
+@media (prefers-reduced-motion: no-preference){
+  .screen{animation:in .22s ease-out}
+  @keyframes in{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+}
+</style>
+
+<div class="app" id="app"></div>
+<div id="overlay"></div>
+
+<script>
+(function(){
+const KEY='gastos-hogar-proto-v3';
+const CUR={
+  ARS:{n:'Peso argentino',loc:'es-AR',d:2},
+  USD:{n:'Dólar estadounidense',loc:'en-US',d:2},
+  CLP:{n:'Peso chileno',loc:'es-CL',d:0},
+  UYU:{n:'Peso uruguayo',loc:'es-UY',d:2},
+  MXN:{n:'Peso mexicano',loc:'es-MX',d:2},
+  COP:{n:'Peso colombiano',loc:'es-CO',d:0},
+  PEN:{n:'Sol peruano',loc:'es-PE',d:2},
+  EUR:{n:'Euro',loc:'es-ES',d:2}
+};
+const CATS=['Alimentación','Salud','Educación','Servicios','Solidaridad','Ocio / Recreación'];
+const OWE_TYPES={tarjeta:'Tarjeta de crédito',cuotas:'Cuotas o préstamo',persona:'A una persona',otro:'Otro'};
+const uid=()=>Math.random().toString(36).slice(2,10);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const emailOk=e=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e.trim());
+function dayStr(offset){const d=new Date();d.setDate(d.getDate()-(offset||0));return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10);}
+const today=()=>dayStr(0);
+const norm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function ymOf(off){const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-off);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+function monthName(ym){const [y,m]=ym.split('-').map(Number);return new Date(y,m-1,1).toLocaleDateString('es-AR',{month:'long'});}
+function monthLabel(ym){if(ym===ymOf(0))return 'Este mes ('+monthName(ym)+')';if(ym===ymOf(1))return 'Mes pasado ('+monthName(ym)+')';
+  const [y,m]=ym.split('-').map(Number);const t=new Date(y,m-1,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'});return t.charAt(0).toUpperCase()+t.slice(1);}
+function longDate(s){const [y,m,d]=s.split('-').map(Number);const o={weekday:'long',day:'numeric',month:'long'};if(y!==new Date().getFullYear())o.year='numeric';
+  let t=new Date(y,m-1,d).toLocaleDateString('es-AR',o).replace(',','');t=t.charAt(0).toUpperCase()+t.slice(1);
+  if(s===today())t='Hoy · '+t;else if(s===dayStr(1))t='Ayer · '+t;return t;}
+function niceDate(s){const [y,m,d]=s.split('-').map(Number);const dt=new Date(y,m-1,d);
+  if(s===today())return 'Hoy'; if(s===dayStr(1))return 'Ayer';
+  return dt.toLocaleDateString('es-AR',{day:'numeric',month:'short'}).replace('.','');}
+
+function seed(){
+  const bp=uid(),ef=uid(),mp=uid(),vi=uid(),hel=uid();
+  return {users:[{email:'admin@gmail.com',name:'Admin',pass:'admin',currency:'ARS',onboarded:true,obStep:'done',categories:CATS.slice(),
+    accounts:[
+      {id:bp,name:'Banco Principal',amount:452000,kind:'dinero'},
+      {id:ef,name:'Efectivo',amount:38500,kind:'dinero'},
+      {id:mp,name:'Mercado Pago',amount:72300.5,kind:'dinero'},
+      {id:vi,name:'Tarjeta Visa',amount:85400,kind:'pagar',sub:'tarjeta'},
+      {id:hel,name:'Cuotas heladera',amount:60000,kind:'pagar',sub:'cuotas'}],
+    movements:[
+      {id:uid(),type:'ingreso',amount:365000,date:dayStr(39),ts:1,desc:'Sueldo',acc:bp},
+      {id:uid(),type:'gasto',amount:65000,date:dayStr(33),ts:1,desc:'Cuota del colegio',cat:'Educación',parts:[{acc:bp,amount:65000}]},
+      {id:uid(),type:'gasto',amount:51200,date:dayStr(25),ts:1,desc:'Compra del mes',cat:'Alimentación',parts:[{acc:bp,amount:51200}]},
+      {id:uid(),type:'gasto',amount:12800,date:dayStr(20),ts:1,desc:'Farmacia',cat:'Salud',parts:[{acc:ef,amount:12800}]},
+      {id:uid(),type:'ingreso',amount:380000,date:dayStr(9),ts:1,desc:'Sueldo',acc:bp},
+      {id:uid(),type:'gasto',amount:42350,date:dayStr(6),desc:'Supermercado',cat:'Alimentación',parts:[{acc:bp,amount:42350}]},
+      {id:uid(),type:'gasto',amount:18900,date:dayStr(4),desc:'Factura de luz',cat:'Servicios',parts:[{acc:mp,amount:18900}]},
+      {id:uid(),type:'transfer',amount:20000,date:dayStr(3),ts:1,desc:'Retiro del cajero',from:bp,to:ef},
+      {id:uid(),type:'gasto',amount:25000,date:dayStr(1),desc:'Cine',cat:'Ocio / Recreación',parts:[{acc:vi,amount:15000},{acc:ef,amount:10000}]}
+    ]}],session:null};
+}
+function load(){try{const r=localStorage.getItem(KEY);if(r)return JSON.parse(r);}catch(e){}return seed();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db));}catch(e){}}
+let db=load();
+
+function fmt(v,c){c=c||me().currency||'ARS';const k=CUR[c];
+  return new Intl.NumberFormat(k.loc,{style:'currency',currency:c,minimumFractionDigits:k.d,maximumFractionDigits:k.d}).format(v||0);}
+function decSep(c){const p=new Intl.NumberFormat(CUR[c].loc).formatToParts(1.5);return (p.find(x=>x.type==='decimal')||{}).value||'.';}
+function symbol(c){const p=new Intl.NumberFormat(CUR[c].loc,{style:'currency',currency:c}).formatToParts(1);return (p.find(x=>x.type==='currency')||{}).value||c;}
+// Interpreta lo que escribe la persona según la moneda: "1.234,56" en ARS, "1,234.56" en USD
+function parseAmt(s,c){
+  let t=String(s||'').trim(); if(!t) return null;
+  const d=decSep(c); let ds=d;
+  if(!t.includes(d)){ const other=d===','?'.':','; const m=t.match(new RegExp('\\'+other+'(\\d{1,2})$')); if(m && t.split(other).length===2) ds=other; }
+  let out=''; for(const ch of t){ if(/\d/.test(ch)) out+=ch; else if(ch===ds) out+='.'; }
+  if(!out || out==='.') return NaN;
+  if(out.split('.').length>2) return NaN;
+  let v=Number(out); if(isNaN(v)) return NaN;
+  const f=10**CUR[c].d; return Math.round(v*f)/f;
+}
+const round=(v,c)=>{const f=10**CUR[c].d;return Math.round(v*f)/f;};
+const displayName=u=>(u.name&&u.name.trim())||(u.email||'').split('@')[0];
+function me(){return db.users.find(u=>u.email===db.session)||{};}
+const isMoney=a=>(a.kind||'dinero')==='dinero';
+const activeAccs=u=>(u.accounts||[]).filter(a=>!a.deleted);
+const moneyAccs=u=>activeAccs(u).filter(isMoney);
+const oweAccs=u=>activeAccs(u).filter(a=>a.kind==='pagar');
+const involves=(m,id)=>m.acc===id||m.to===id||m.from===id||(m.parts||[]).some(p=>p.acc===id);
+const nameTaken=(u,name,exceptId)=>activeAccs(u).some(a=>a.id!==exceptId&&a.name.toLowerCase()===name.toLowerCase());
+const cards=u=>oweAccs(u).filter(a=>a.sub==='tarjeta');
+const total=u=>moneyAccs(u).reduce((a,x)=>a+Number(x.amount||0),0);
+const totalOwe=u=>oweAccs(u).reduce((a,x)=>a+Number(x.amount||0),0);
+const accById=(u,id)=>(u.accounts||[]).find(a=>a.id===id);
+
+const ICON={
+  back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+  up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
+  down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>',
+  swap:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h14l-4-4M20 16H6l4 4"/></svg>',
+  home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3.5 10.5L12 3.5l8.5 7V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z"/></svg>',
+  wallet:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 7h15a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a2 2 0 0 1 2-2h11v3"/><circle cx="16" cy="13.5" r="1.3" fill="currentColor"/></svg>',
+  card:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="M3 10h18M7 15h4"/></svg>',
+  list:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1" fill="currentColor"/><circle cx="4.5" cy="12" r="1" fill="currentColor"/><circle cx="4.5" cy="18" r="1" fill="currentColor"/></svg>',
+  chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20h16M7 16v-5M12 16V6M17 16v-8"/></svg>',
+  check:'<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  eye:'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+  search:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>',
+  split:'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-7M12 13L6 6M12 13l6-7M6 6v4M6 6h4M18 6v4M18 6h-4"/></svg>',
+  mark:'<svg viewBox="300 200 400 600" aria-hidden="true"><path d="M483 328 L565 220 L648 328 L620 328 C620 390 600 440 545 480 C480 525 400 560 382 620 C376 645 378 665 380 682 C345 655 325 615 330 570 C338 510 380 470 430 445 C490 415 515 385 520 328 Z" fill="#4FE3D4"/><path d="M635 405 C662 435 672 480 655 520 C635 565 585 590 540 615 C495 640 475 680 480 720 C483 748 490 765 500 780 C460 770 420 740 410 695 C400 645 430 610 480 585 C540 555 595 530 620 485 C632 460 636 430 635 405 Z" fill="#4FE3D4"/></svg>'
+};
+
+const app=document.getElementById('app');
+const overlay=document.getElementById('overlay');
+let ui={view:'welcome',tab:'inicio',flash:null,prefill:'',form:null,sub:null};
+
+function go(view,extra){ui=Object.assign({},ui,{view,flash:null,editId:null},extra||{});render();window.scrollTo(0,0);}
+let toastT;
+function toast(t){clearTimeout(toastT);overlay.querySelector('.toast')?.remove();const d=document.createElement('div');d.className='toast';d.setAttribute('role','status');d.textContent=t;overlay.appendChild(d);toastT=setTimeout(()=>d.remove(),2600);}
+const $=s=>app.querySelector(s);
+function topbar(title){return `<div class="topbar"><button class="icon-btn" id="back" aria-label="Volver">${ICON.back}</button>${title?`<h2>${title}</h2>`:''}</div>`;}
+function bindBack(to,extra){$('#back').onclick=()=>go(to,extra);}
+
+function render(){
+  app.classList.toggle('has-nav',ui.view==='main');
+  ({welcome,login,forgot,signup,onboarding,main,form})[ui.view]();
+  // Cualquier movimiento en pantalla se puede tocar para ver su detalle
+  app.querySelectorAll('[data-mov]').forEach(el=>{const open=()=>openMov(el.dataset.mov);el.onclick=open;
+    el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}};});
+}
+
+// Campo de monto reutilizable con vista previa del formato
+function amountField(id,c,opts){opts=opts||{};
+  return `<div class="field ${opts.big?'big-amount':''}"><label for="${id}">${opts.label||'Monto'}</label>
+    <div class="input-wrap"><span class="prefix">${esc(symbol(c))}</span><input id="${id}" inputmode="decimal" autocomplete="off" placeholder="${CUR[c].d?'0'+decSep(c)+'00':'0'}" value="${esc(opts.val||'')}"></div>
+    <p class="hint" id="${id}-h"></p></div>`;}
+function liveHint(id,c,cb){const i=$('#'+id),h=$('#'+id+'-h');const upd=()=>{const v=parseAmt(i.value,c);h.textContent=(v===null)?'':(isNaN(v)?'Revisá el número: usá solo cifras':'Se va a guardar '+fmt(v,c));cb&&cb();};i.addEventListener('input',upd);upd();}
+
+/* ---------- Bienvenida ---------- */
+function welcome(){
+  app.innerHTML=`<div class="welcome screen">
+    <div>
+      <div class="brand"><div class="mark">${ICON.mark}</div><span class="brand-name">FLUXUS</span></div>
+      <h1>Tu dinero, en movimiento y en orden.</h1>
+      <p class="lead">Registrá lo que entra y lo que sale, cuenta por cuenta.</p>
+    </div>
+    <div class="stack">
+      <button class="btn btn-primary" id="toLogin">Iniciar sesión</button>
+      <button class="btn btn-secondary" id="toSignup">Crear nuevo perfil</button>
+      <p class="note">Prototipo. Usuario de prueba: <b>admin@gmail.com</b> · contraseña <b>admin</b></p>
+    </div>
+  </div>`;
+  $('#toLogin').onclick=()=>go('login');
+  $('#toSignup').onclick=()=>go('signup');
+}
+
+/* ---------- Iniciar sesión ---------- */
+function login(){
+  app.innerHTML=`<div class="screen stack">${topbar()}
+    <div class="stack-s"><h1>Iniciar sesión</h1><p class="muted">Ingresá con tu correo y contraseña.</p></div>
+    ${ui.flash?`<div class="info-box" role="status">${esc(ui.flash)}</div>`:''}
+    <form class="stack" id="f" novalidate>
+      <div class="field"><label for="le">Correo electrónico</label>
+        <div class="input-wrap"><input id="le" type="email" autocomplete="email" inputmode="email" placeholder="nombre@correo.com" value="${esc(ui.prefill||'')}"></div></div>
+      <div class="field"><label for="lp">Contraseña</label>
+        <div class="input-wrap"><input id="lp" type="password" autocomplete="current-password"><button type="button" class="icon-btn" id="eye" aria-label="Mostrar contraseña" style="margin:0 -10px 0 0">${ICON.eye}</button></div></div>
+      <div><button type="button" class="link" id="forgot">Olvidé mi contraseña</button></div>
+      <div id="err" aria-live="polite"></div>
+      <button class="btn btn-primary" type="submit">Ingresar</button>
+    </form>
+    <p class="muted small" style="text-align:center">¿No tenés perfil? <button class="link" id="toSignup">Crear nuevo perfil</button></p>
+  </div>`;
+  bindBack('welcome');
+  $('#eye').onclick=()=>{const i=$('#lp');i.type=i.type==='password'?'text':'password';};
+  $('#forgot').onclick=()=>go('forgot',{prefill:$('#le').value});
+  $('#toSignup').onclick=()=>go('signup');
+  $('#f').onsubmit=e=>{e.preventDefault();
+    const em=$('#le').value.trim().toLowerCase(), pw=$('#lp').value;
+    const err=$('#err');
+    if(!em||!pw){err.innerHTML='<div class="error-box">Completá el correo y la contraseña.</div>';return;}
+    const u=db.users.find(x=>x.email===em&&x.pass===pw);
+    if(!u){err.innerHTML='<div class="error-box">El correo o la contraseña no coinciden. Revisalos e intentá de nuevo.</div>';return;}
+    db.session=u.email;save();
+    if(u.onboarded) go('main',{tab:'inicio'}); else go('onboarding');
+  };
+}
+
+/* ---------- Olvidé mi contraseña ---------- */
+function forgot(){
+  app.innerHTML=`<div class="screen stack">${topbar()}
+    <div class="stack-s"><h1>Recuperar contraseña</h1><p class="muted">Te enviamos un enlace a tu correo para crear una contraseña nueva.</p></div>
+    <form class="stack" id="f" novalidate>
+      <div class="field"><label for="fe">Correo electrónico</label>
+        <div class="input-wrap"><input id="fe" type="email" autocomplete="email" inputmode="email" value="${esc(ui.prefill||'')}"></div></div>
+      <div id="out" aria-live="polite"></div>
+      <button class="btn btn-primary" type="submit">Enviar enlace</button>
+    </form>
+  </div>`;
+  bindBack('login');
+  $('#f').onsubmit=e=>{e.preventDefault();
+    const em=$('#fe').value;
+    if(!emailOk(em)){$('#out').innerHTML='<div class="error-box">Escribí un correo válido, por ejemplo nombre@correo.com.</div>';return;}
+    $('#out').innerHTML=`<div class="info-box">Si hay un perfil con ${esc(em.trim())}, vas a recibir el enlace en unos minutos.</div><p class="note" style="margin-top:8px">En el prototipo no se envía ningún correo. El envío real se conecta en la versión Android.</p>`;
+  };
+}
+
+/* ---------- Crear nuevo perfil ---------- */
+function signup(){
+  app.innerHTML=`<div class="screen stack">${topbar()}
+    <div class="stack-s"><h1>Crear nuevo perfil</h1><p class="muted">Solo necesitás un correo y una contraseña.</p></div>
+    <form class="stack" id="f" novalidate>
+      <div class="field"><label for="sn">Tu nombre</label>
+        <div class="input-wrap"><input id="sn" autocomplete="given-name" placeholder="Ej.: Leo"></div>
+        <p class="hint">Así te vamos a saludar en la app.</p></div>
+      <div class="field"><label for="se">Correo electrónico</label>
+        <div class="input-wrap"><input id="se" type="email" autocomplete="email" inputmode="email" placeholder="nombre@correo.com"></div></div>
+      <div class="field"><label for="sp">Contraseña</label>
+        <div class="input-wrap"><input id="sp" type="password" autocomplete="new-password"></div></div>
+      <div class="field"><label for="sp2">Repetir contraseña</label>
+        <div class="input-wrap"><input id="sp2" type="password" autocomplete="new-password"></div>
+        <p class="msg" id="match" aria-live="polite"></p></div>
+      <div id="err" aria-live="polite"></div>
+      <button class="btn btn-primary" type="submit" id="create" disabled>Crear usuario</button>
+    </form>
+  </div>`;
+  bindBack('welcome');
+  const check=()=>{
+    const a=$('#sp').value,b=$('#sp2').value,m=$('#match');
+    let ok=false;
+    if(!b){m.textContent='';m.className='msg';}
+    else if(a!==b){m.textContent='Contraseñas incorrectas';m.className='msg bad';}
+    else {m.textContent='Contraseñas correctas';m.className='msg ok';ok=true;}
+    $('#create').disabled=!(ok && a.length>0 && emailOk($('#se').value) && $('#sn').value.trim());
+  };
+  ['#sn','#se','#sp','#sp2'].forEach(s=>$(s).addEventListener('input',check));
+  $('#f').onsubmit=e=>{e.preventDefault();
+    if($('#create').disabled) return;
+    const em=$('#se').value.trim().toLowerCase();
+    if(db.users.some(u=>u.email===em)){$('#err').innerHTML='<div class="error-box">Ya existe un perfil con ese correo. Iniciá sesión con él.</div>';return;}
+    db.users.push({email:em,name:$('#sn').value.trim(),pass:$('#sp').value,currency:null,onboarded:false,obStep:'intro',categories:CATS.slice(),accounts:[],movements:[]});
+    save();
+    go('login',{prefill:em});ui.flash='Perfil creado. Ya podés iniciar sesión.';render();
+  };
+}
+
+/* ---------- Configuración inicial ---------- */
+let ob={adding:false,sel:null};
+function onboarding(){
+  const u=me(); const step=u.obStep||'intro';
+  const idx={intro:0,moneda:0,banco:1,efectivo:2,otras:3,fin:4}[step];
+  const prog=`<div class="progress" aria-hidden="true">${[0,1,2,3].map(i=>`<span class="${i<=Math.min(idx,3)?'on':''}"></span>`).join('')}</div>`;
+  const setStep=s=>{u.obStep=s;save();ob.adding=false;render();window.scrollTo(0,0);};
+
+  if(step==='intro'){
+    app.innerHTML=`<div class="screen stack">${prog}
+      <p class="step-label">Bienvenida</p>
+      <h1>${u.name?'Hola, '+esc(u.name)+'. ':''}Armemos la foto completa de tu dinero</h1>
+      <div class="card two">
+        <div class="item"><span class="badge have">${ICON.wallet}</span><div><h3>Lo que tenés</h3><p>Banco, efectivo, billeteras virtuales y ahorros. Lo cargamos ahora, en 3 pasos cortos.</p></div></div>
+        <div class="item"><span class="badge owe">${ICON.card}</span><div><h3>Lo que tenés por pagar</h3><p>Tarjetas de crédito, cuotas o préstamos. Lo anotás después, con calma, desde Inicio. Te lo recomendamos: así ves cuánto te queda libre de verdad.</p></div></div>
+      </div>
+      <button class="btn btn-primary" id="next">Empezar</button>
+    </div>`;
+    $('#next').onclick=()=>setStep('moneda');
+    return;
+  }
+
+  if(step==='moneda'){
+    const sel=ob.sel||u.currency||'ARS';
+    app.innerHTML=`<div class="screen stack">${prog}
+      <div class="topbar" style="margin:0"><button class="icon-btn" id="back" aria-label="Volver">${ICON.back}</button><p class="step-label">Antes de empezar</p></div>
+      <h1>¿En qué moneda manejás tu dinero?</h1>
+      <p class="muted">Vamos a mostrar todos los montos en esta moneda, con su formato de puntos y comas.</p>
+      <div class="opts" role="radiogroup" aria-label="Moneda">
+        ${Object.keys(CUR).map(c=>`<button type="button" role="radio" aria-checked="${c===sel}" class="opt ${c===sel?'sel':''}" data-c="${c}"><span class="code">${c}</span><span>${CUR[c].n}</span><span class="sample">${fmt(1234.56,c)}</span></button>`).join('')}
+      </div>
+      <button class="btn btn-primary" id="next">Continuar</button>
+    </div>`;
+    $('#back').onclick=()=>setStep('intro');
+    app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{ob.sel=b.dataset.c;render();});
+    $('#next').onclick=()=>{u.currency=sel;ob.sel=null;setStep('banco');};
+    return;
+  }
+
+  const c=u.currency;
+
+  if(step==='banco'||step==='efectivo'){
+    const isB=step==='banco';
+    const def=isB?'Banco Principal':'Efectivo';
+    const existing=u.accounts[isB?0:1];
+    const msg=isB?['Para empezar, necesitamos saber con qué dinero contás hoy.','Ingresá el monto disponible en tu cuenta bancaria principal.','Cada detalle suma.']
+                 :['Ahora vamos a sumar tu dinero en efectivo.','Contá con calma lo que tenés en casa y cargalo aquí.'];
+    app.innerHTML=`<div class="screen stack">${prog}
+      <div class="topbar" style="margin:0"><button class="icon-btn" id="back" aria-label="Volver">${ICON.back}</button><p class="step-label">Paso ${isB?1:2} de 3</p></div>
+      <div class="card ob-msg">${msg.map(m=>`<p>${m}</p>`).join('')}</div>
+      <form class="stack" id="f" novalidate>
+        <div class="field"><label for="an">Cuenta</label>
+          <div class="input-wrap"><input id="an" value="${esc(existing?existing.name:def)}" autocomplete="off"></div></div>
+        ${amountField('am',c,{val:existing?String(existing.amount).replace('.',decSep(c)):''})}
+        <div id="err" aria-live="polite"></div>
+        <button class="btn btn-primary" type="submit">Guardar y seguir</button>
+      </form>
+    </div>`;
+    liveHint('am',c);
+    $('#back').onclick=()=>setStep(isB?'moneda':'banco');
+    $('#f').onsubmit=e=>{e.preventDefault();
+      const name=$('#an').value.trim(), v=parseAmt($('#am').value,c), err=$('#err');
+      if(!name){err.innerHTML='<div class="error-box">Poné un nombre a la cuenta.</div>';return;}
+      if(v===null){err.innerHTML='<div class="error-box">Ingresá un monto. Si no tenés dinero ahí, escribí 0.</div>';return;}
+      if(isNaN(v)){err.innerHTML='<div class="error-box">El monto no es válido. Usá solo números.</div>';return;}
+      const other=u.accounts[isB?1:0];
+      if(other && other.name.toLowerCase()===name.toLowerCase()){err.innerHTML='<div class="error-box">Ya tenés una cuenta con ese nombre.</div>';return;}
+      const i=isB?0:1;
+      if(u.accounts[i]){u.accounts[i].name=name;u.accounts[i].amount=v;} else u.accounts[i]={id:uid(),name,amount:v,kind:'dinero'};
+      setStep(isB?'efectivo':'otras');
+    };
+    return;
+  }
+
+  if(step==='otras'){
+    const extras=u.accounts.slice(2);
+    const list=extras.length?`<div class="card"><p class="section-title" style="margin-bottom:4px">Cuentas que agregaste</p><div class="acc-list">${extras.map(a=>`<div class="acc-row"><span>${esc(a.name)}</span><span>${fmt(a.amount,c)}</span></div>`).join('')}</div></div>`:'';
+    app.innerHTML=`<div class="screen stack">${prog}
+      <div class="topbar" style="margin:0"><button class="icon-btn" id="back" aria-label="Volver">${ICON.back}</button><p class="step-label">Paso 3 de 3</p></div>
+      <div class="card ob-msg"><p>${extras.length?'¿Tenés dinero en alguna otra cuenta, billetera virtual o ahorro?':'¿Tenés dinero en otra cuenta, billetera virtual o ahorro?'}</p></div>
+      ${list}
+      ${ob.adding?`<form class="stack card" id="f" novalidate>
+          <div class="field"><label for="an">Nombre de la cuenta</label>
+            <div class="input-wrap"><input id="an" placeholder="Ej.: Mercado Pago, Plazo fijo, Ahorro" autocomplete="off"></div></div>
+          ${amountField('am',c)}
+          <div id="err" aria-live="polite"></div>
+          <div class="btn-row"><button type="button" class="btn btn-secondary" id="cancel">Cancelar</button><button class="btn btn-primary" type="submit">Agregar</button></div>
+        </form>`
+      :`<div class="btn-row"><button class="btn btn-secondary" id="no">No</button><button class="btn btn-primary" id="yes">Sí</button></div>`}
+    </div>`;
+    $('#back').onclick=()=>setStep('efectivo');
+    if(ob.adding){
+      liveHint('am',c); $('#an').focus();
+      $('#cancel').onclick=()=>{ob.adding=false;render();};
+      $('#f').onsubmit=e=>{e.preventDefault();
+        const name=$('#an').value.trim(), v=parseAmt($('#am').value,c), err=$('#err');
+        if(!name){err.innerHTML='<div class="error-box">Poné un nombre a la cuenta.</div>';return;}
+        if(u.accounts.some(a=>a.name.toLowerCase()===name.toLowerCase())){err.innerHTML='<div class="error-box">Ya tenés una cuenta con ese nombre.</div>';return;}
+        if(v===null||isNaN(v)){err.innerHTML='<div class="error-box">Ingresá un monto válido. Puede ser 0.</div>';return;}
+        u.accounts.push({id:uid(),name,amount:v,kind:'dinero'});save();ob.adding=false;render();toast('Cuenta "'+name+'" agregada');
+      };
+    } else {
+      $('#yes').onclick=()=>{ob.adding=true;render();};
+      $('#no').onclick=()=>setStep('fin');
+    }
+    return;
+  }
+
+  if(step==='fin'){
+    app.innerHTML=`<div class="screen stack">
+      <div class="card congrats">
+        <div class="check">${ICON.check}</div>
+        <p class="lbl">Tu dinero disponible hoy</p>
+        <p class="big num">${fmt(total(u),c)}</p>
+      </div>
+      <div class="card ob-msg"><p>Muy bien. Este es tu punto de partida.</p><p>Tomar conciencia de tu dinero es el primer paso para ordenarlo y hacerlo crecer.</p></div>
+      <div class="card"><p class="section-title" style="margin-bottom:4px">${u.accounts.length} cuentas</p><div class="acc-list">${u.accounts.map(a=>`<div class="acc-row"><span>${esc(a.name)}</span><span>${fmt(a.amount,c)}</span></div>`).join('')}</div></div>
+      <button class="btn btn-primary" id="go">Continuar</button>
+    </div>`;
+    $('#go').onclick=()=>{u.onboarded=true;u.obStep='done';save();go('main',{tab:'inicio'});};
+  }
+}
+
+/* ---------- Gráficos del informe ---------- */
+// Cada categoría tiene siempre el mismo color (según su orden en la lista de categorías), no según su puesto
+function catColor(u,k){const i=(u.categories||[]).indexOf(k);return i>=0&&i<8?`var(--s${i+1})`:'var(--s-other)';}
+function monthTitle(ym){const [y,m]=ym.split('-').map(Number);const t=new Date(y,m-1,1).toLocaleDateString('es-AR',{month:'long',year:'numeric'}).replace(' de ',' ');return t.charAt(0).toUpperCase()+t.slice(1);}
+function fmtShort(v,c){const k=CUR[c];return new Intl.NumberFormat(k.loc,{style:'currency',currency:c,maximumFractionDigits:0}).format(v||0);}
+function donutSVG(slices,total,c,hi,hiIdx,mname){
+  const R=66,SW=26,C=2*Math.PI*R,gap=slices.length>1?2.5:0;let off=0;
+  const segs=slices.map((s,i)=>{const len=s.val/total*C,d=Math.max(len-gap,1);
+    const el=`<circle class="seg ${hiIdx!==null&&hiIdx!==i?'dim':''}" data-si="${i}" r="${R}" cx="90" cy="90" fill="none" style="stroke:${s.color}" stroke-width="${hiIdx===i?SW+6:SW}" stroke-dasharray="${d.toFixed(2)} ${(C-d).toFixed(2)}" stroke-dashoffset="${(-off).toFixed(2)}" transform="rotate(-90 90 90)"><title>${esc(s.name)}: ${fmt(s.val,c)}</title></circle>`;
+    off+=len;return el;}).join('');
+  const lbl=hi?hi.name:'Gastos de '+mname, val=hi?hi.val:total;
+  const sub=hi?Math.round(hi.val/total*100)+'% del total':'';
+  return `<svg viewBox="0 0 180 180" class="donut" role="img" aria-label="Gastos por categoría: ${esc(slices.map(s=>s.name+' '+Math.round(s.val/total*100)+'%').join(', '))}">
+    <circle r="${R}" cx="90" cy="90" fill="none" style="stroke:var(--surface-2)" stroke-width="${SW}"/>${segs}
+    <text x="90" y="${sub?78:84}" text-anchor="middle" class="d-lbl">${esc(lbl.length>18?lbl.slice(0,17)+'…':lbl)}</text>
+    <text x="90" y="${sub?98:104}" text-anchor="middle" class="d-val">${esc(fmtShort(val,c))}</text>
+    ${sub?`<text x="90" y="116" text-anchor="middle" class="d-lbl">${sub}</text>`:''}</svg>`;
+}
+function evoSVG(months,vals,sel,color){
+  const W=320,H=150,top=10,base=124,bw=30,slot=W/6,max=Math.max(...vals,1);
+  const bars=vals.map((v,i)=>{const x=slot*i+(slot-bw)/2,h=v>0?Math.max(4,(v/max)*(base-top)):0,y=base-h,rr=Math.min(4,h/2);
+    const path=h?`<path d="M${x},${base} V${y+rr} Q${x},${y} ${x+rr},${y} H${x+bw-rr} Q${x+bw},${y} ${x+bw},${y+rr} V${base} Z" style="fill:${color}" class="${i===sel?'':'dim'}"/>`:'';
+    const [yy,mm]=months[i].split('-').map(Number);const ml=new Date(yy,mm-1,1).toLocaleDateString('es-AR',{month:'short'}).replace('.','');
+    return `<g class="ebar" data-ei="${i}"><rect x="${slot*i}" y="0" width="${slot}" height="${H}" fill="transparent"/>${path}
+      <text x="${x+bw/2}" y="${base+18}" text-anchor="middle" class="e-lbl ${i===sel?'on':''}">${ml}</text></g>`;}).join('');
+  return `<div style="overflow-x:auto"><svg viewBox="0 0 ${W} ${H}" class="evo" role="img" aria-label="Gasto por mes, últimos 6 meses">
+    <line x1="0" x2="${W}" y1="${base}" y2="${base}" style="stroke:var(--line)" stroke-width="1"/>${bars}</svg></div>`;
+}
+
+/* ---------- Lista de movimientos ---------- */
+function movRow(u,m){
+  const c=u.currency;
+  const names=ids=>ids.map(id=>{const a=accById(u,id);return a?a.name:'Cuenta eliminada';}).join(' + ');
+  if(m.type==='ingreso'){
+    return `<div data-mov="${m.id}" role="button" tabindex="0" class="mov in"><span class="mi">${ICON.up}</span><div class="mt"><p>${esc(m.desc||'Ingreso')}</p><p>${esc(names([m.acc]))} · ${niceDate(m.date)}</p></div><span class="ma">+${fmt(m.amount,c)}</span></div>`;
+  }
+  if(m.type==='gasto'){
+    const via=m.parts.map(p=>{const a=accById(u,p.acc);const n=a?a.name:'Cuenta eliminada';return m.parts.length>1?`${n} ${fmt(p.amount,c)}`:n;}).join(' + ');
+    return `<div data-mov="${m.id}" role="button" tabindex="0" class="mov out"><span class="mi">${ICON.down}</span><div class="mt"><p>${esc(m.desc||m.cat)}</p><p>${esc(m.desc?m.cat+' · ':'')}${esc(via)} · ${niceDate(m.date)}</p></div><span class="ma">−${fmt(m.amount,c)}</span></div>`;
+  }
+  if(m.type==='pago'){
+    return `<div data-mov="${m.id}" role="button" tabindex="0" class="mov pay"><span class="mi">${ICON.swap}</span><div class="mt"><p>Pago de ${esc(names([m.to]))}</p><p>Desde ${esc(names([m.from]))} · ${niceDate(m.date)}</p></div><span class="ma">${fmt(m.amount,c)}</span></div>`;
+  }
+  if(m.type==='transfer'){
+    return `<div data-mov="${m.id}" role="button" tabindex="0" class="mov pay"><span class="mi">${ICON.swap}</span><div class="mt"><p>${esc(m.desc||'Transferencia')}</p><p>${esc(names([m.from]))} → ${esc(names([m.to]))} · ${niceDate(m.date)}</p></div><span class="ma">${fmt(m.amount,c)}</span></div>`;
+  }
+  if(m.type==='ajuste_pagar'){
+    return `<div data-mov="${m.id}" role="button" tabindex="0" class="mov pay"><span class="mi">${ICON.card}</span><div class="mt"><p>Monto actualizado: ${esc(names([m.to]))}</p><p>${esc(m.desc?m.desc+' · ':'')}${niceDate(m.date)}</p></div><span class="ma">${m.delta>0?'+':'−'}${fmt(Math.abs(m.delta),c)}</span></div>`;
+  }
+  if(m.type==='nuevo_pagar'){
+    return `<div data-mov="${m.id}" role="button" tabindex="0" class="mov pay"><span class="mi">${ICON.card}</span><div class="mt"><p>Anotado por pagar: ${esc(names([m.to]))}</p><p>${niceDate(m.date)}</p></div><span class="ma">${fmt(m.amount,c)}</span></div>`;
+  }
+  return '';
+}
+const sortMovs=list=>list.slice().sort((a,b)=>(b.date+(b.ts||'')).localeCompare(a.date+(a.ts||'')));
+
+/* ---------- App principal ---------- */
+function main(){
+  const u=me(); if(!u.email){go('welcome');return;}
+  const c=u.currency;
+  const ym=today().slice(0,7);
+  const mov=(u.movements||[]).filter(m=>(m.date||'').startsWith(ym));
+  const inc=mov.filter(m=>m.type==='ingreso').reduce((a,m)=>a+m.amount,0);
+  const exp=mov.filter(m=>m.type==='gasto').reduce((a,m)=>a+m.amount,0);
+  const mes=new Date().toLocaleDateString('es-AR',{month:'long'});
+  const shown=displayName(u), initial=shown[0].toUpperCase();
+  const hoy=new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long'}).replace(',','');
+  const tabs=[['inicio','Inicio',ICON.home],['cuentas','Cuentas',ICON.wallet],['movimientos','Movimientos',ICON.list],['informe','Informe',ICON.chart]];
+  let body='';
+  if(ui.tab==='inicio'){
+    const owe=totalOwe(u), have=total(u), free=have-owe;
+    const recent=sortMovs(u.movements||[]).slice(0,5);
+    body=`<div class="stack">
+      <div class="balance"><p class="lbl">Dinero disponible</p><p class="big">${fmt(have,c)}</p><p class="sub">Suma de tus ${moneyAccs(u).length} cuentas</p>
+        ${oweAccs(u).length?`<div class="freebar" role="img" aria-label="Libre ${Math.max(0,Math.round(have>0?free/have*100:0))}% de tu dinero"><span style="width:${Math.max(0,Math.min(100,have>0?free/have*100:0))}%"></span></div>
+          <div class="split"><div><p>Te queda libre</p><p>${fmt(free,c)}</p></div><div style="text-align:right"><p>Por pagar</p><p>${fmt(owe,c)}</p></div></div>`:''}
+      </div>
+      ${owe>have?`<p class="soft-note">Hoy lo que tenés por pagar es más que tu dinero disponible. Verlo claro es el primer paso para ordenarlo.</p>`:''}
+      ${!oweAccs(u).length&&!u.hideOweTip?`<div class="tip"><h3>Sumá lo que tenés por pagar</h3><p>Tarjetas de crédito, cuotas o préstamos. Así ves cuánto te queda libre de verdad.</p>
+        <div class="btn-row"><button class="btn btn-secondary" id="tipNo">Ahora no</button><button class="btn btn-primary" id="tipYes">Anotar</button></div></div>`:''}
+      <div class="summary">
+        <div class="sum in"><div class="top"><span class="ico">${ICON.up}</span>Ingresos</div><p class="amt">${fmt(inc,c)}</p><p class="per">en ${mes}</p></div>
+        <div class="sum out"><div class="top"><span class="ico">${ICON.down}</span>Gastos</div><p class="amt">${fmt(exp,c)}</p><p class="per">en ${mes}</p></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-act" id="goGasto"><span class="dot out" aria-hidden="true">−</span>Registrar gastos</button>
+        <button class="btn btn-act" id="goIngreso"><span class="dot in" aria-hidden="true">+</span>Registrar ingresos</button>
+        <button class="btn btn-secondary btn-sm" id="goPagar">${ICON.card.replace('<svg','<svg width="20" height="20"')} Por pagar${oweAccs(u).length?' · '+fmt(owe,c):''}</button>
+      </div>
+      <div class="stack-s"><p class="section-title">Últimos movimientos</p>
+        ${recent.length?`<div class="movs">${recent.map(m=>movRow(u,m)).join('')}</div>`:`<p class="note">Todavía no registraste movimientos. Empezá con tu primer gasto o ingreso.</p>`}
+      </div>
+    </div>`;
+  } else if(ui.tab==='cuentas'){
+    const ma=moneyAccs(u), oa=oweAccs(u);
+    const cnt=id=>(u.movements||[]).filter(m=>involves(m,id)).length;
+    const accCard=(a,owe)=>`<button class="acc-card ${owe?'owe':''}" data-id="${a.id}"><span class="an">${esc(a.name)}</span><span class="aa">${fmt(a.amount,c)}</span><span class="am">${owe?(OWE_TYPES[a.sub]||'Por pagar'):(cnt(a.id)===1?'1 movimiento':cnt(a.id)+' movimientos')}</span></button>`;
+    body=`<div class="stack">
+      <h1>Cuentas</h1>
+      <div class="stack-s"><div class="total-row"><p class="section-title">Tu dinero</p><span class="num" style="font-weight:700">${fmt(total(u),c)}</span></div>
+        <div class="acc-grid">${ma.map(a=>accCard(a,false)).join('')}</div></div>
+      ${oa.length?`<div class="stack-s"><div class="total-row"><p class="section-title">Por pagar</p><span class="num muted" style="font-weight:700">${fmt(totalOwe(u),c)}</span></div>
+        <div class="acc-grid">${oa.map(a=>accCard(a,true)).join('')}</div></div>`:''}
+      <div class="actions">
+        <button class="btn btn-primary" id="newAcc">+ Nueva cuenta</button>
+        ${ma.length>1?'<button class="btn btn-secondary" id="trf">'+ICON.swap.replace('<svg','<svg width="20" height="20"')+' Transferir entre cuentas</button>':''}
+      </div>
+      <p class="soft-note">Tocá una cuenta para ver sus movimientos, cambiarle el nombre, ajustar el saldo o eliminarla.</p>
+    </div>`;
+  } else if(ui.tab==='movimientos'){
+    const f=ui.mf||(ui.mf={period:ymOf(0),type:'all',acc:'',cat:'',q:''});
+    const all=sortMovs(u.movements||[]);
+    const months=[...new Set([ymOf(0),ymOf(1),...all.map(m=>m.date.slice(0,7))])].sort().reverse();
+    const accName=id=>{const a=accById(u,id);return a?a.name:'';};
+    let list=all.filter(m=>f.period==='all'||m.date.startsWith(f.period));
+    if(f.type==='ingreso') list=list.filter(m=>m.type==='ingreso');
+    else if(f.type==='gasto') list=list.filter(m=>m.type==='gasto');
+    else if(f.type==='otros') list=list.filter(m=>m.type!=='ingreso'&&m.type!=='gasto');
+    if(f.acc) list=list.filter(m=>involves(m,f.acc));
+    if(f.cat) list=list.filter(m=>m.type==='gasto'&&m.cat===f.cat);
+    if(f.q.trim()){const q=norm(f.q.trim());list=list.filter(m=>norm([m.desc,m.cat,...movAccIds(m).map(accName)].join(' ')).includes(q));}
+    const fa=f.acc?accById(u,f.acc):null;
+    const inc=list.filter(m=>m.type==='ingreso').reduce((s,m)=>s+m.amount,0);
+    const exp=list.filter(m=>m.type==='gasto').reduce((s,m)=>s+(fa?(m.parts.find(p=>p.acc===fa.id)||{amount:0}).amount:m.amount),0);
+    const usedCats=[...new Set(all.filter(m=>m.type==='gasto').map(m=>m.cat))].sort((a,b)=>a.localeCompare(b,'es'));
+    const withMovs=u.accounts.filter(a=>!a.deleted||all.some(m=>involves(m,a.id)));
+    const accOpt=a=>`<option value="${a.id}" ${a.id===f.acc?'selected':''}>${esc(a.name)}</option>`;
+    const g1=withMovs.filter(a=>isMoney(a)&&!a.deleted), g2=withMovs.filter(a=>!isMoney(a)&&!a.deleted), g3=withMovs.filter(a=>a.deleted);
+    const groups=[];list.forEach(m=>{const g=groups[groups.length-1];if(g&&g.d===m.date)g.items.push(m);else groups.push({d:m.date,items:[m]});});
+    const dirty=f.period!==ymOf(0)||f.type!=='all'||f.acc||f.cat||f.q;
+    const typeChips=[['all','Todo'],['gasto','Gastos'],['ingreso','Ingresos'],['otros','Pagos y transferencias']];
+    body=`<div class="stack">
+      <h1>Movimientos</h1>
+      <div class="stack-s">
+        <div class="input-wrap"><span class="prefix" aria-hidden="true">${ICON.search}</span><input id="q" type="search" placeholder="Buscar descripción, categoría o cuenta" value="${esc(f.q)}" autocomplete="off" aria-label="Buscar"></div>
+        <div class="frow">
+          <div class="input-wrap"><select id="fp" aria-label="Mes">${months.map(ym=>`<option value="${ym}" ${ym===f.period?'selected':''}>${esc(monthLabel(ym))}</option>`).join('')}<option value="all" ${f.period==='all'?'selected':''}>Todos los meses</option></select></div>
+          <div class="input-wrap"><select id="fa" aria-label="Cuenta"><option value="">Todas las cuentas</option>
+            ${g1.length?`<optgroup label="Dinero">${g1.map(accOpt).join('')}</optgroup>`:''}
+            ${g2.length?`<optgroup label="Por pagar">${g2.map(accOpt).join('')}</optgroup>`:''}
+            ${g3.length?`<optgroup label="Eliminadas">${g3.map(accOpt).join('')}</optgroup>`:''}</select></div>
+        </div>
+        <div class="chips" role="radiogroup" aria-label="Tipo">${typeChips.map(([k,v])=>`<button type="button" class="chip ${f.type===k?'sel':''}" role="radio" aria-checked="${f.type===k}" data-ty="${k}">${v}</button>`).join('')}</div>
+        ${(f.type==='all'||f.type==='gasto')&&usedCats.length?`<div class="input-wrap"><select id="fc" aria-label="Categoría"><option value="">Todas las categorías</option>${usedCats.map(k=>`<option ${k===f.cat?'selected':''}>${esc(k)}</option>`).join('')}</select></div>`:''}
+        ${dirty?'<div><button class="link" id="clear">Limpiar filtros</button></div>':''}
+      </div>
+      <div class="summary">
+        <div class="sum in"><div class="top"><span class="ico">${ICON.up}</span>Ingresos</div><p class="amt">${fmt(inc,c)}</p></div>
+        <div class="sum out"><div class="top"><span class="ico">${ICON.down}</span>Gastos</div><p class="amt">${fmt(exp,c)}</p></div>
+      </div>
+      <p class="soft-note">${list.length===1?'1 movimiento':list.length+' movimientos'}${fa?' de '+esc(fa.name):''}. Tocá uno para ver el detalle, editarlo o eliminarlo.</p>
+      ${groups.length?groups.map(g=>`<div class="stack-s"><p class="day">${esc(longDate(g.d))}</p><div class="movs">${g.items.map(m=>fa?accMovRow(u,m,fa):movRow(u,m)).join('')}</div></div>`).join(''):'<p class="note">No hay movimientos con estos filtros.</p>'}
+    </div>`;
+  } else {
+    // ---------- Informe ----------
+    const r=ui.rf||(ui.rf={ym:ymOf(0),cmp:ymOf(1),cat:null,hi:null,evo:null});
+    const all=u.movements||[];
+    const gastosDe=ym=>all.filter(m=>m.type==='gasto'&&m.date.startsWith(ym));
+    const porCat=ym=>{const o={};gastosDe(ym).forEach(m=>{o[m.cat]=(o[m.cat]||0)+m.amount;});return o;};
+    const months=[...new Set([ymOf(0),ymOf(1),...all.map(m=>m.date.slice(0,7))])].sort().reverse();
+    const mOpts=sel=>months.map(ym=>`<option value="${ym}" ${ym===sel?'selected':''}>${esc(monthLabel(ym))}</option>`).join('');
+    const cur=porCat(r.ym);
+    const ranked=Object.entries(cur).sort((a,b)=>b[1]-a[1]);
+    const totG=ranked.reduce((s,x)=>s+x[1],0);
+    const totI=all.filter(m=>m.type==='ingreso'&&m.date.startsWith(r.ym)).reduce((s,m)=>s+m.amount,0);
+    const mname=monthName(r.ym);
+    // Dona: las 5 categorías con más gasto + "Otras"
+    const slices=ranked.slice(0,5).map(([k,v])=>({name:k,val:v,color:catColor(u,k)}));
+    const rest=ranked.slice(5).reduce((s,x)=>s+x[1],0);
+    if(rest>0) slices.push({name:'Otras categorías',val:rest,color:'var(--s-other)',other:true});
+    const hi=(r.hi!==null&&slices[r.hi])?slices[r.hi]:null;
+    const pct=v=>totG?Math.round(v/totG*100):0;
+    const donut=totG?donutSVG(slices,totG,c,hi,r.hi,mname):'';
+    // Comparación
+    const bYm=r.cmpB||r.ym; const A=porCat(r.cmp), B=porCat(bYm);
+    const cmpCats=[...new Set([...Object.keys(A),...Object.keys(B)])].sort((x,y)=>(B[y]||0)-(B[x]||0)||(A[y]||0)-(A[x]||0));
+    const totA=Object.values(A).reduce((s,v)=>s+v,0), totB=Object.values(B).reduce((s,v)=>s+v,0);
+    const diffTxt=(a,b)=>{const d=round(b-a,c);if(!d)return '<span class="diff eq">Igual</span>';
+      return `<span class="diff ${d>0?'up':'down'}">${d>0?'▲ +':'▼ −'}${fmt(Math.abs(d),c)}</span>`;};
+    // Evolución
+    const usedCats=[...new Set(all.filter(m=>m.type==='gasto').map(m=>m.cat))];
+    const evoCat=(r.cat&&usedCats.includes(r.cat))?r.cat:(ranked[0]?ranked[0][0]:usedCats[0]);
+    const [ey,em]=r.ym.split('-').map(Number);
+    const evoMonths=[5,4,3,2,1,0].map(k=>{const d=new Date(ey,em-1-k,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');});
+    const evoVals=evoMonths.map(ym=>porCat(ym)[evoCat]||0);
+    const evoSel=(r.evo!==null&&r.evo>=0&&r.evo<6)?r.evo:5;
+    const withData=evoVals.filter(v=>v>0);
+    const avg=withData.length?withData.reduce((s,v)=>s+v,0)/withData.length:0;
+
+    body=`<div class="stack">
+      <h1>Informe</h1>
+      <div class="input-wrap"><select id="rm" aria-label="Mes del informe">${mOpts(r.ym)}</select></div>
+
+      <div class="card stack">
+        <p class="section-title">¿En qué gastaste más en ${esc(mname)}?</p>
+        ${totG?`<div class="donut-wrap">${donut}</div>
+          <div class="legend">${slices.map((s,i)=>`<button type="button" class="lg ${r.hi===i?'on':''} ${r.hi!==null&&r.hi!==i?'dim':''}" data-si="${i}">
+            <span class="sw" style="background:${s.color}"></span><span class="ln">${esc(s.name)}</span><span class="lp">${pct(s.val)}%</span><span class="la">${fmt(s.val,c)}</span></button>`).join('')}</div>
+          <p class="soft-note">Tocá un color o una categoría para destacarla.</p>`
+        :`<p class="note">No hay gastos registrados en ${esc(mname)}.</p>`}
+      </div>
+
+      <div class="card stack-s">
+        <p class="section-title">Resumen de ${esc(mname)}</p>
+        <div class="total-row"><span>Ingresos</span><span class="num" style="font-weight:600;color:var(--pos)">+${fmt(totI,c)}</span></div>
+        <div class="total-row"><span>Gastos</span><span class="num" style="font-weight:600;color:var(--neg)">−${fmt(totG,c)}</span></div>
+        <div class="total-row" style="border-top:1px solid var(--line);padding-top:8px"><span style="font-weight:600">${totI-totG>=0?'Te quedó':'Gastaste de más'}</span><span class="v" style="font-size:1.3rem">${fmt(Math.abs(totI-totG),c)}</span></div>
+        <p class="soft-note" style="padding:0">Los gastos con tarjeta cuentan en el mes de la compra. Los pagos de tarjetas y deudas no se suman otra vez.</p>
+      </div>
+
+      ${ranked.length?`<div class="card stack-s">
+        <p class="section-title">Todas las categorías</p>
+        <div class="cbars">${ranked.map(([k,v])=>`<button type="button" class="cbar" data-cat="${esc(k)}">
+          <span class="cb-top"><span class="ln">${esc(k)}</span><span class="la">${fmt(v,c)} <span class="muted">· ${pct(v)}%</span></span></span>
+          <span class="track"><span class="fill" style="width:${Math.max(2,v/ranked[0][1]*100)}%;background:${catColor(u,k)}"></span></span></button>`).join('')}</div>
+        <p class="soft-note" style="padding:0">Tocá una categoría para ver sus movimientos.</p>
+      </div>`:''}
+
+      <div class="card stack">
+        <p class="section-title">Comparar meses</p>
+        <p class="small muted" style="margin-top:-8px">Elegí los dos meses. A la izquierda el de antes, a la derecha el que querés comparar.</p>
+        <div class="frow">
+          <div class="input-wrap"><select id="ra" aria-label="Mes a comparar">${months.map(ym=>`<option value="${ym}" ${ym===r.cmp?'selected':''}>${esc(monthTitle(ym))}</option>`).join('')}</select></div>
+          <div class="input-wrap"><select id="rb" aria-label="Comparar con">${months.map(ym=>`<option value="${ym}" ${ym===bYm?'selected':''}>${esc(monthTitle(ym))}</option>`).join('')}</select></div>
+        </div>
+        ${cmpCats.length?`<div class="cmp">${cmpCats.map(k=>`<div class="cmp-row">
+            <div class="cmp-l"><span class="sw" style="background:${catColor(u,k)}"></span><span class="ln">${esc(k)}</span></div>
+            <div class="cmp-v"><span class="muted small num">${fmt(A[k]||0,c)} → </span><span class="num" style="font-weight:600">${fmt(B[k]||0,c)}</span></div>
+            <div class="cmp-d">${diffTxt(A[k]||0,B[k]||0)}</div></div>`).join('')}
+          <div class="cmp-row total"><div class="cmp-l"><span class="ln">Total</span></div>
+            <div class="cmp-v"><span class="muted small num">${fmt(totA,c)} → </span><span class="num" style="font-weight:700">${fmt(totB,c)}</span></div>
+            <div class="cmp-d">${diffTxt(totA,totB)}</div></div></div>
+          <p class="soft-note" style="padding:0">${esc(monthTitle(bYm))} contra ${esc(monthTitle(r.cmp))}: ▲ gastaste más · ▼ gastaste menos.</p>`
+        :`<p class="note">No hay gastos en ninguno de los dos meses.</p>`}
+      </div>
+
+      ${usedCats.length?`<div class="card stack">
+        <p class="section-title">Evolución de una categoría</p>
+        <div class="input-wrap"><select id="rc" aria-label="Categoría">${usedCats.sort((x,y)=>x.localeCompare(y,'es')).map(k=>`<option ${k===evoCat?'selected':''}>${esc(k)}</option>`).join('')}</select></div>
+        <div class="evo-read"><span class="muted">${esc(monthTitle(evoMonths[evoSel]))}</span><span class="v">${fmt(evoVals[evoSel],c)}</span></div>
+        ${evoSVG(evoMonths,evoVals,evoSel,catColor(u,evoCat))}
+        <p class="soft-note" style="padding:0">Últimos 6 meses. Promedio de los meses con gasto: ${fmt(avg,c)}. Tocá una barra para ver su monto.</p>
+      </div>`:''}
+    </div>`;
+  }
+  const still=ui.quiet; ui.quiet=false;
+  app.innerHTML=`<div class="screen grow${still?' still':''}" style="display:flex;flex-direction:column">
+    <div class="header"><div class="who"><p class="hello">Hola, ${esc(shown)}</p><p class="muted small">${esc(hoy.charAt(0).toUpperCase()+hoy.slice(1))}</p></div>
+      <button class="avatar" id="menu" aria-label="Abrir menú">${esc(initial)}</button></div>
+    ${body}</div>
+  <nav class="nav" aria-label="Secciones"><div class="nav-inner">${tabs.map(t=>`<button class="tab ${ui.tab===t[0]?'on':''}" data-t="${t[0]}" ${ui.tab===t[0]?'aria-current="page"':''}><span class="pillbg">${t[2]}</span>${t[1]}</button>`).join('')}</div></nav>`;
+  app.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{ui.tab=b.dataset.t;render();window.scrollTo(0,0);});
+  $('#menu').onclick=()=>openMenu();
+  if(ui.tab==='inicio'){
+    $('#goGasto').onclick=()=>go('form',{form:'gasto',sub:null});
+    $('#goIngreso').onclick=()=>go('form',{form:'ingreso',sub:null});
+    $('#goPagar').onclick=()=>go('form',{form:'pagar',sub:null});
+    if($('#tipYes')){
+      $('#tipYes').onclick=()=>go('form',{form:'pagar',sub:'nuevo'});
+      $('#tipNo').onclick=()=>{u.hideOweTip=true;save();render();toast('Lo encontrás siempre en el botón "Por pagar"');};
+    }
+  }
+  if(ui.tab==='movimientos'){
+    const f=ui.mf, re=()=>{ui.quiet=true;render();};
+    $('#q').addEventListener('input',e=>{f.q=e.target.value;const pos=e.target.selectionStart;re();const q=$('#q');q.focus();try{q.setSelectionRange(pos,pos);}catch(_){}});
+    $('#fp').onchange=e=>{f.period=e.target.value;re();};
+    $('#fa').onchange=e=>{f.acc=e.target.value;re();};
+    if($('#fc')) $('#fc').onchange=e=>{f.cat=e.target.value;re();};
+    app.querySelectorAll('.chip[data-ty]').forEach(b=>b.onclick=()=>{f.type=b.dataset.ty;if(f.type!=='all'&&f.type!=='gasto')f.cat='';re();});
+    if($('#clear')) $('#clear').onclick=()=>{ui.mf=null;re();};
+  }
+  if(ui.tab==='informe'){
+    const r=ui.rf, re=()=>{ui.quiet=true;render();};
+    $('#rm').onchange=e=>{r.ym=e.target.value;r.hi=null;r.evo=null;const d=new Date(+r.ym.slice(0,4),+r.ym.slice(5)-2,1);r.cmp=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');r.cmpB=null;re();};
+    if($('#ra')) $('#ra').onchange=e=>{r.cmp=e.target.value;re();};
+    if($('#rb')) $('#rb').onchange=e=>{r.cmpB=e.target.value;re();};
+    if($('#rc')) $('#rc').onchange=e=>{r.cat=e.target.value;r.evo=null;re();};
+    app.querySelectorAll('[data-si]').forEach(el=>el.addEventListener('click',()=>{const i=+el.dataset.si;r.hi=r.hi===i?null:i;re();}));
+    app.querySelectorAll('.ebar').forEach(el=>el.addEventListener('click',()=>{r.evo=+el.dataset.ei;re();}));
+    app.querySelectorAll('.cbar').forEach(el=>el.onclick=()=>{ui.mf={period:r.ym,type:'gasto',acc:'',cat:el.dataset.cat,q:''};ui.tab='movimientos';render();window.scrollTo(0,0);});
+  }
+  if(ui.tab==='cuentas'){
+    app.querySelectorAll('.acc-card').forEach(b=>b.onclick=()=>go('form',{form:'cuenta',accId:b.dataset.id,sub:null}));
+    $('#newAcc').onclick=()=>go('form',{form:'nueva',sub:null});
+    if($('#trf')) $('#trf').onclick=()=>go('form',{form:'transfer',fromId:null,ret:null});
+  }
+}
+
+/* ---------- Formularios ---------- */
+function form(){
+  const u=me(); if(!u.email){go('welcome');return;}
+  ({gasto:formGasto,ingreso:formIngreso,pagar:formPagar,cuenta:formCuenta,nueva:formNueva,transfer:formTransfer,mov:formMov})[ui.form](u);
+}
+const backCuentas=()=>go('main',{tab:'cuentas',form:null,sub:null});
+
+function catField(u){return `<div class="field"><label for="cat">¿En qué se usó?</label>
+  <div class="input-wrap"><select id="cat"><option value="">Elegí una categoría</option>${u.categories.map(k=>`<option>${esc(k)}</option>`).join('')}<option value="__new">+ Nueva categoría</option></select></div></div>
+  <div class="field" id="newcatF" hidden><label for="newcat">Nombre de la nueva categoría</label>
+  <div class="input-wrap"><input id="newcat" placeholder="Ej.: Mascotas, Transporte" autocomplete="off"></div></div>`;}
+function catReady(){const v=$('#cat').value;$('#newcatF').hidden=v!=='__new';return !!v && (v!=='__new'||!!$('#newcat').value.trim());}
+function takeCat(u){let cat=$('#cat').value;if(cat==='__new'){cat=$('#newcat').value.trim();const ex=u.categories.find(k=>k.toLowerCase()===cat.toLowerCase());if(ex)cat=ex;else u.categories.push(cat);}return cat;}
+
+// Movimiento visto desde una cuenta concreta
+function accMovRow(u,m,a){
+  const c=u.currency, nm=id=>{const x=accById(u,id);return x?x.name:'Cuenta eliminada';};
+  let cls='pay',ico=ICON.swap,title='',sub='',amt='';
+  if(m.type==='ingreso'){cls='in';ico=ICON.up;title=m.desc||'Ingreso';amt='+'+fmt(m.amount,c);}
+  else if(m.type==='gasto'){const p=m.parts.find(p=>p.acc===a.id)||{amount:m.amount};cls='out';ico=ICON.down;title=m.desc||m.cat;sub=m.desc?m.cat:'';
+    if(m.parts.length>1)sub+=(sub?' · ':'')+'compartido, total '+fmt(m.amount,c);
+    amt=(isMoney(a)?'−':'+')+fmt(p.amount,c);}
+  else if(m.type==='pago'){title=m.from===a.id?'Pago de '+nm(m.to):'Pago desde '+nm(m.from);amt='−'+fmt(m.amount,c);}
+  else if(m.type==='transfer'){if(m.from===a.id){title='Transferencia a '+nm(m.to);amt='−'+fmt(m.amount,c);}else{title='Transferencia desde '+nm(m.from);amt='+'+fmt(m.amount,c);}sub=m.desc||'';}
+  else if(m.type==='nuevo_pagar'){ico=ICON.card;title='Anotado por pagar';amt=fmt(m.amount,c);}
+  else if(m.type==='ajuste_pagar'){ico=ICON.card;title='Monto actualizado';sub=m.desc||'';amt=(m.delta>0?'+':'−')+fmt(Math.abs(m.delta),c);}
+  return `<div data-mov="${m.id}" role="button" tabindex="0" class="mov ${cls}"><span class="mi">${ico}</span><div class="mt"><p>${esc(title)}</p><p>${esc(sub?sub+' · ':'')}${niceDate(m.date)}</p></div><span class="ma">${amt}</span></div>`;
+}
+
+function formCuenta(u){
+  const c=u.currency, a=accById(u,ui.accId);
+  if(!a||a.deleted){backCuentas();return;}
+  const money=isMoney(a), sub=ui.sub;
+  const list=sortMovs((u.movements||[]).filter(m=>involves(m,a.id)));
+  const reopen=(extra)=>go('form',Object.assign({form:'cuenta',accId:a.id,sub:null},extra||{}));
+  let subHtml='';
+  if(sub==='nombre'){
+    subHtml=`<form class="card stack" id="f" novalidate>
+      <div class="field"><label for="nm">Nombre de la cuenta</label><div class="input-wrap"><input id="nm" value="${esc(a.name)}" autocomplete="off"></div></div>
+      <div id="err" aria-live="polite"></div>
+      <div class="btn-row"><button type="button" class="btn btn-secondary" id="cancel">Cancelar</button><button class="btn btn-primary" type="submit">Guardar</button></div></form>`;
+  } else if(sub==='ajuste'){
+    subHtml=`<form class="card stack" id="f" novalidate>
+      <p>${money?`¿Cuánto hay hoy en <b>${esc(a.name)}</b>?`:`¿Cuánto debés hoy en <b>${esc(a.name)}</b>?`}</p>
+      ${amountField('am',c,{label:money?'Monto actual correcto':'Lo que debés hoy',val:String(a.amount).replace('.',decSep(c)),big:true})}
+      <div id="diff" aria-live="polite"></div>
+      <div id="catBox" class="stack" hidden>${money?catField(u):''}</div>
+      <div class="field" id="dsF" hidden><label for="ds" id="dsL">Descripción <span class="opt-tag">(opcional)</span></label><div class="input-wrap"><input id="ds" autocomplete="off"></div></div>
+      <div id="err" aria-live="polite"></div>
+      <div class="btn-row"><button type="button" class="btn btn-secondary" id="cancel">Cancelar</button><button class="btn btn-primary" type="submit" id="ok" disabled>Actualizar</button></div></form>`;
+  } else if(sub==='eliminar'){
+    const others=moneyAccs(u).filter(x=>x.id!==a.id);
+    if(money && !others.length){
+      subHtml=`<div class="card stack"><div class="error-box">Necesitás al menos una cuenta de dinero para registrar gastos e ingresos. Creá otra antes de eliminar esta.</div>
+        <button class="btn btn-secondary" id="cancel">Entendido</button></div>`;
+    } else if(a.amount===0){
+      subHtml=`<div class="card stack"><p>¿Eliminar <b>${esc(a.name)}</b>? Sus movimientos quedan en el historial.</p>
+        <div class="btn-row"><button class="btn btn-secondary" id="cancel">Cancelar</button><button class="btn btn-primary" id="del" style="background:var(--neg);color:var(--accent-fg)">Eliminar</button></div></div>`;
+    } else if(money){
+      subHtml=`<form class="warn-box" id="f" novalidate role="alert">
+        <p>La cuenta <b>${esc(a.name)}</b> que desea eliminar tiene <b>${fmt(a.amount,c)}</b>. Es necesario mover ese dinero a otra cuenta antes de eliminarla.</p>
+        <div class="field"><label for="dest">Mover el dinero a</label>
+          <div class="input-wrap" style="background:var(--surface)"><select id="dest"><option value="">Elegí una cuenta</option>${others.map(x=>`<option value="${x.id}">${esc(x.name)} · ${fmt(x.amount,c)}</option>`).join('')}<option value="__new">+ Crear cuenta nueva</option></select></div></div>
+        <div class="field" id="newF" hidden><label for="newname">Nombre de la cuenta nueva</label><div class="input-wrap" style="background:var(--surface)"><input id="newname" autocomplete="off"></div></div>
+        <div id="err" aria-live="polite"></div>
+        <div class="btn-row"><button type="button" class="btn btn-secondary" id="cancel">Cancelar</button><button class="btn btn-primary" type="submit" id="ok" disabled style="background:var(--neg);color:var(--accent-fg)">Mover y eliminar</button></div></form>`;
+    } else {
+      subHtml=`<div class="card stack"><p>Todavía debés <b>${fmt(a.amount,c)}</b> en ${esc(a.name)}. Registrá el pago antes de eliminarla, o actualizá el monto si ya no debés nada.</p>
+        <div class="btn-row"><button class="btn btn-secondary" id="cancel">Cancelar</button><button class="btn btn-primary" id="pay">Registrar un pago</button></div></div>`;
+    }
+  }
+  app.innerHTML=`<div class="screen stack">${topbar()}
+    <div class="acc-head"><p class="step-label">${money?'Cuenta de dinero':esc(OWE_TYPES[a.sub]||'Por pagar')}</p><h1>${esc(a.name)}</h1>
+      <p class="acc-big">${fmt(a.amount,c)}</p><p class="muted small">${money?'Saldo actual':'Lo que debés hoy'}</p></div>
+    ${ui.flash?`<div class="info-box" role="status">${esc(ui.flash)}</div>`:''}
+    ${sub?subHtml:`<div class="acc-actions">
+      <button class="btn btn-secondary btn-sm" id="aNombre">Cambiar nombre</button>
+      <button class="btn btn-secondary btn-sm" id="aAjuste">${money?'Ajustar saldo':'Actualizar monto'}</button>
+      ${money&&moneyAccs(u).length>1?'<button class="btn btn-secondary btn-sm" id="aTrf">Transferir</button>':''}
+      ${!money&&a.amount>0?'<button class="btn btn-secondary btn-sm" id="aPay">Registrar un pago</button>':''}
+      <button class="btn btn-secondary btn-sm" id="aDel" style="color:var(--neg)">Eliminar</button></div>`}
+    <div class="stack-s"><p class="section-title">Movimientos</p>
+      ${list.length?`<div class="movs">${list.map(m=>accMovRow(u,m,a)).join('')}</div>`:'<p class="note">Esta cuenta todavía no tiene movimientos.</p>'}</div>
+  </div>`;
+  $('#back').onclick=()=>sub?reopen():backCuentas();
+  if(!sub){
+    $('#aNombre').onclick=()=>reopen({sub:'nombre'});
+    $('#aAjuste').onclick=()=>reopen({sub:'ajuste'});
+    $('#aDel').onclick=()=>reopen({sub:'eliminar'});
+    if($('#aTrf')) $('#aTrf').onclick=()=>go('form',{form:'transfer',fromId:a.id,ret:a.id});
+    if($('#aPay')) $('#aPay').onclick=()=>go('form',{form:'pagar',sub:'pago'});
+    return;
+  }
+  if($('#cancel')) $('#cancel').onclick=()=>reopen();
+  const flashDone=()=>{save();reopen();ui.flash=`Se ha actualizado el monto total de ${a.name}. El monto actual es ${fmt(a.amount,c)}.`;render();};
+
+  if(sub==='nombre'){
+    $('#nm').focus();
+    $('#f').onsubmit=e=>{e.preventDefault();const name=$('#nm').value.trim();
+      if(!name){$('#err').innerHTML='<div class="error-box">Poné un nombre a la cuenta.</div>';return;}
+      if(nameTaken(u,name,a.id)){$('#err').innerHTML='<div class="error-box">Ya tenés una cuenta con ese nombre.</div>';return;}
+      a.name=name;save();reopen();toast('Nombre actualizado');};
+  }
+  if(sub==='ajuste'){
+    let diff=0;
+    const state=()=>{
+      const v=parseAmt($('#am').value,c);
+      diff=(v===null||isNaN(v))?0:round(v-a.amount,c);
+      const d=$('#diff');
+      if(v===null||isNaN(v)||diff===0){d.innerHTML=(v!==null&&!isNaN(v))?'<p class="hint">Es el mismo monto que ya tenés registrado.</p>':'';}
+      else if(money&&diff<0) d.innerHTML=`<div class="warn-box"><p>Bajó <b>${fmt(-diff,c)}</b>. Para que todo cuadre, se registra como un gasto. Contanos en qué se usó.</p></div>`;
+      else if(money&&diff>0) d.innerHTML=`<div class="info-box">Subió ${fmt(diff,c)}. Se registra como un ingreso.</div>`;
+      else d.innerHTML=`<div class="info-box" style="background:var(--accent-soft);color:var(--accent)">${diff>0?'Sube':'Baja'} ${fmt(Math.abs(diff),c)} lo que tenés por pagar.</div>`;
+      $('#catBox').hidden=!(money&&diff<0);
+      $('#dsF').hidden=!diff;
+      $('#ds').placeholder=money?(diff<0?'Ej.: Verdulería, propina':'Ej.: Me devolvieron un préstamo'):'Ej.: Intereses, nuevo resumen';
+      const catOk=!(money&&diff<0)||catReady();
+      $('#ok').disabled=!(diff!==0&&catOk);
+    };
+    liveHint('am',c,state);
+    if(money){$('#cat').addEventListener('change',state);$('#newcat').addEventListener('input',state);}
+    $('#f').onsubmit=e=>{e.preventDefault();state();if($('#ok').disabled)return;
+      const v=parseAmt($('#am').value,c), desc=$('#ds').value.trim();
+      if(money){
+        if(diff<0) u.movements.push({id:uid(),type:'gasto',amount:-diff,date:today(),ts:Date.now(),desc:desc||'Ajuste de saldo',cat:takeCat(u),parts:[{acc:a.id,amount:-diff}]});
+        else u.movements.push({id:uid(),type:'ingreso',amount:diff,date:today(),ts:Date.now(),desc:desc||'Ajuste de saldo',acc:a.id});
+      } else u.movements.push({id:uid(),type:'ajuste_pagar',delta:diff,amount:Math.abs(diff),date:today(),ts:Date.now(),desc,to:a.id});
+      a.amount=v; flashDone();
+    };
+  }
+  if(sub==='eliminar'){
+    const kill=()=>{a.deleted=true;save();backCuentas();toast(`Cuenta ${a.name} eliminada`);};
+    if($('#del')) $('#del').onclick=kill;
+    if($('#pay')) $('#pay').onclick=()=>go('form',{form:'pagar',sub:'pago'});
+    if($('#dest')){
+      const state=()=>{const v=$('#dest').value;$('#newF').hidden=v!=='__new';$('#ok').disabled=!(v&&(v!=='__new'||$('#newname').value.trim()));};
+      $('#dest').addEventListener('change',state);$('#newname').addEventListener('input',state);
+      $('#f').onsubmit=e=>{e.preventDefault();state();if($('#ok').disabled)return;
+        let d;
+        if($('#dest').value==='__new'){const name=$('#newname').value.trim();
+          if(nameTaken(u,name)){$('#err').innerHTML='<div class="error-box">Ya tenés una cuenta con ese nombre. Elegila de la lista.</div>';return;}
+          d={id:uid(),name,amount:0,kind:'dinero'};u.accounts.push(d);}
+        else d=accById(u,$('#dest').value);
+        const amt=a.amount;
+        d.amount=round(d.amount+amt,c); a.amount=0;
+        u.movements.push({id:uid(),type:'transfer',amount:amt,date:today(),ts:Date.now(),from:a.id,to:d.id,desc:'Cierre de '+a.name});
+        a.deleted=true;save();backCuentas();toast(`${fmt(amt,c)} movidos a ${d.name}. Cuenta ${a.name} eliminada`);
+      };
+    }
+  }
+}
+
+function formNueva(u){
+  const c=u.currency;
+  app.innerHTML=`<div class="screen stack">${topbar('Nueva cuenta')}
+    <form class="stack" id="f" novalidate>
+      <div class="field"><label for="nm">Nombre</label><div class="input-wrap"><input id="nm" placeholder="Ej.: Caja de ahorro, Billetera virtual" autocomplete="off"></div></div>
+      ${amountField('am',c,{label:'Monto inicial <span class="opt-tag">(opcional)</span>'})}
+      <div id="err" aria-live="polite"></div>
+      <button class="btn btn-primary" type="submit" id="ok" disabled>Crear cuenta</button>
+      <p class="soft-note">Para tarjetas de crédito, cuotas o préstamos, usá "Por pagar" en Inicio.</p>
+    </form></div>`;
+  $('#back').onclick=backCuentas;
+  const state=()=>{const v=parseAmt($('#am').value,c);$('#ok').disabled=!($('#nm').value.trim()&&(v===null||!isNaN(v)));};
+  liveHint('am',c,state);$('#nm').addEventListener('input',state);$('#nm').focus();
+  $('#f').onsubmit=e=>{e.preventDefault();state();if($('#ok').disabled)return;
+    const name=$('#nm').value.trim(), v=parseAmt($('#am').value,c)||0;
+    if(nameTaken(u,name)){$('#err').innerHTML='<div class="error-box">Ya tenés una cuenta con ese nombre.</div>';return;}
+    u.accounts.push({id:uid(),name,amount:v,kind:'dinero'});save();backCuentas();toast(`Cuenta ${name} creada`);
+  };
+}
+
+function formTransfer(u){
+  const c=u.currency, money=moneyAccs(u);
+  const opts=sel=>money.map(a=>`<option value="${a.id}" ${a.id===sel?'selected':''}>${esc(a.name)} · ${fmt(a.amount,c)}</option>`).join('');
+  app.innerHTML=`<div class="screen stack">${topbar('Transferir entre cuentas')}
+    <p class="muted">Mover dinero entre tus cuentas no cambia tu total ni cuenta como ingreso o gasto.</p>
+    <form class="stack" id="f" novalidate>
+      <div class="field"><label for="from">Desde</label><div class="input-wrap"><select id="from"><option value="">Elegí una cuenta</option>${opts(ui.fromId)}</select></div></div>
+      <div class="field"><label for="to">Hacia</label><div class="input-wrap"><select id="to"><option value="">Elegí una cuenta</option>${opts(null)}</select></div></div>
+      ${amountField('am',c,{big:true})}
+      <div class="field"><label for="fd">Fecha</label><div class="input-wrap"><input id="fd" type="date" value="${today()}" max="${today()}"></div></div>
+      <div class="field"><label for="ds">Descripción <span class="opt-tag">(opcional)</span></label><div class="input-wrap"><input id="ds" placeholder="Ej.: Retiro del cajero" autocomplete="off"></div></div>
+      <div id="err" aria-live="polite"></div>
+      <button class="btn btn-primary" type="submit" id="ok" disabled>Transferir</button>
+    </form></div>`;
+  const leave=()=>ui.ret?go('form',{form:'cuenta',accId:ui.ret,sub:null}):backCuentas();
+  $('#back').onclick=leave;
+  const state=()=>{
+    const v=parseAmt($('#am').value,c), f=accById(u,$('#from').value), t=accById(u,$('#to').value);
+    let msg='';
+    if(f&&t&&f.id===t.id) msg='Elegí dos cuentas distintas.';
+    else if(f&&v>f.amount) msg=`En ${esc(f.name)} tenés ${fmt(f.amount,c)}. Ninguna cuenta puede quedar en negativo.`;
+    $('#err').innerHTML=msg?`<div class="error-box">${msg}</div>`:'';
+    $('#ok').disabled=!(v>0&&f&&t&&!msg&&$('#fd').value);
+  };
+  liveHint('am',c,state);['#from','#to','#fd'].forEach(s=>$(s).addEventListener('change',state));
+  $('#f').onsubmit=e=>{e.preventDefault();state();if($('#ok').disabled)return;
+    const v=parseAmt($('#am').value,c), f=accById(u,$('#from').value), t=accById(u,$('#to').value);
+    f.amount=round(f.amount-v,c); t.amount=round(t.amount+v,c);
+    u.movements.push({id:uid(),type:'transfer',amount:v,date:$('#fd').value,ts:Date.now(),from:f.id,to:t.id,desc:$('#ds').value.trim()});
+    save();leave();toast(`${fmt(v,c)} transferidos a ${t.name}`);
+  };
+}
+const backHome=()=>go('main',{tab:'inicio',form:null,sub:null});
+function done(u,msg){save();backHome();toast(msg);}
+
+// Aplica (s=1) o revierte (s=-1) el efecto de un movimiento sobre los saldos
+function applyMov(u,m,s){
+  const c=u.currency, A=id=>accById(u,id), add=(id,v)=>{const a=A(id);if(a)a.amount=round(a.amount+v,c);};
+  switch(m.type){
+    case 'ingreso': add(m.acc,s*m.amount); break;
+    case 'gasto': m.parts.forEach(p=>{const a=A(p.acc);if(a)add(p.acc,(isMoney(a)?-1:1)*s*p.amount);}); break;
+    case 'pago': add(m.from,-s*m.amount); add(m.to,-s*m.amount); break;
+    case 'transfer': add(m.from,-s*m.amount); add(m.to,s*m.amount); break;
+    case 'nuevo_pagar': add(m.to,s*m.amount); break;
+    case 'ajuste_pagar': add(m.to,s*m.delta); break;
+  }
+}
+// Copia del usuario con el movimiento viejo ya revertido (para editar sin tocar los datos reales)
+function shadow(u,old){const S=Object.assign({},u,{accounts:u.accounts.map(a=>Object.assign({},a))});if(old)applyMov(S,old,-1);return S;}
+// Devuelve la primera cuenta que quedaría en negativo, o null
+function simulate(u,oldM,newM){const S=shadow(u,oldM);if(newM)applyMov(S,newM,1);return S.accounts.find(a=>a.amount<0)||null;}
+function commit(u,old,nm){
+  if(old){applyMov(u,old,-1);const i=u.movements.findIndex(x=>x.id===old.id);u.movements[i]=nm;}
+  else u.movements.push(nm);
+  applyMov(u,nm,1);
+}
+const movAccIds=m=>[m.acc,m.from,m.to,...(m.parts||[]).map(p=>p.acc)].filter(Boolean);
+const touchesDeleted=(u,m)=>movAccIds(m).some(id=>{const a=accById(u,id);return !a||a.deleted;});
+const toInput=(v,c)=>String(v).replace('.',decSep(c));
+function peekCat(u){let cat=$('#cat').value;if(cat==='__new'){cat=$('#newcat').value.trim();const ex=u.categories.find(k=>k.toLowerCase()===cat.toLowerCase());if(ex)cat=ex;}return cat;}
+
+function formGasto(u){
+  const c=u.currency;
+  const old=ui.editId?(u.movements||[]).find(m=>m.id===ui.editId&&m.type==='gasto'):null;
+  const S=shadow(u,old);
+  const money=moneyAccs(S), cs=cards(S);
+  const first=old?old.parts[0].acc:'';
+  // Pago dividido: varias filas cuenta + monto
+  let split=!!(old&&old.parts.length>1);
+  let rows=split?old.parts.map(p=>({acc:p.acc,amt:toInput(p.amount,c)})):[];
+  const cats=u.categories.slice(); if(old&&!cats.includes(old.cat)) cats.push(old.cat);
+  const optList=sel=>`<option value="">Elegí una cuenta</option>
+    <optgroup label="Dinero">${money.map(a=>`<option value="${a.id}" ${a.id===sel?'selected':''}>${esc(a.name)} · ${fmt(a.amount,c)}</option>`).join('')}</optgroup>
+    ${cs.length?`<optgroup label="Tarjetas de crédito">${cs.map(a=>`<option value="${a.id}" ${a.id===sel?'selected':''}>${esc(a.name)} (tarjeta)</option>`).join('')}</optgroup>`:''}`;
+  app.innerHTML=`<div class="screen stack">${topbar(old?'Editar gasto':'Registrar gasto')}
+    ${old?'<p class="muted small">Al guardar, los saldos de las cuentas se corrigen solos.</p>':''}
+    <form class="stack" id="f" novalidate>
+      ${amountField('am',c,{big:true,label:'Monto total',val:old?toInput(old.amount,c):''})}
+      <div class="field"><label for="cat">Categoría</label>
+        <div class="input-wrap"><select id="cat"><option value="">Elegí una categoría</option>${cats.map(k=>`<option ${old&&old.cat===k?'selected':''}>${esc(k)}</option>`).join('')}<option value="__new">+ Nueva categoría</option></select></div></div>
+      <div class="field" id="newcatF" hidden><label for="newcat">Nombre de la nueva categoría</label>
+        <div class="input-wrap"><input id="newcat" placeholder="Ej.: Mascotas, Transporte" autocomplete="off"></div></div>
+      <div class="field"><label for="fd">Fecha</label><div class="input-wrap"><input id="fd" type="date" value="${old?old.date:today()}" max="${today()}"></div></div>
+      <div class="field"><span class="flabel">Pagado con</span><div id="payBox" class="stack-s"></div></div>
+      <div class="field"><label for="ds">Descripción <span class="opt-tag">(opcional)</span></label>
+        <div class="input-wrap"><input id="ds" placeholder="Ej.: Entradas del cine" autocomplete="off" value="${esc(old?old.desc||'':'')}"></div></div>
+      <div id="err" aria-live="polite"></div>
+      <button class="btn btn-primary" type="submit" id="ok" disabled>${old?'Guardar cambios':'Registrar gasto'}</button>
+    </form></div>`;
+  const leave=()=>old?go('form',{form:'mov',movId:old.id,sub:null}):go('main',{tab:'inicio'});
+  $('#back').onclick=leave;
+  const total=()=>parseAmt($('#am').value,c);
+  const restOf=()=>{const v=total()||0;const s=rows.reduce((t,r)=>{const a=parseAmt(r.amt,c);return t+(a>0?a:0);},0);return round(v-s,c);};
+
+  function drawPay(){
+    if(!split){
+      const keep=$('#acc')?$('#acc').value:first;
+      $('#payBox').innerHTML=`<div class="input-wrap"><select id="acc" aria-label="Pagado con">${optList(keep)}</select></div>
+        <div id="short"></div>
+        <button type="button" class="split-link" id="toSplit">${ICON.split} Dividir el pago entre varias cuentas</button>
+        ${cs.length?'':'<p class="hint">¿Pagaste con tarjeta de crédito? Anotala primero en "Por pagar".</p>'}`;
+      $('#acc').onchange=state;
+      $('#toSplit').onclick=enterSplit;
+    } else {
+      $('#payBox').innerHTML=`<div class="split-box">
+        <p class="small muted">Elegí cada cuenta y cuánto pagaste con ella.</p>
+        ${rows.map((r,i)=>`<div class="srow">
+          <div class="input-wrap"><select class="sacc" data-i="${i}" aria-label="Cuenta ${i+1}">${optList(r.acc)}</select></div>
+          <div class="input-wrap s-amt"><span class="prefix">${esc(symbol(c))}</span><input class="samt" data-i="${i}" inputmode="decimal" autocomplete="off" aria-label="Monto con la cuenta ${i+1}" placeholder="0" value="${esc(r.amt)}"></div>
+          ${rows.length>2?`<button type="button" class="icon-btn s-del" data-i="${i}" aria-label="Quitar esta cuenta">×</button>`:'<span></span>'}
+          <p class="s-hint" data-i="${i}"></p></div>`).join('')}
+        <button type="button" class="split-link" id="addRow">+ Agregar otra cuenta</button>
+        <p class="split-sum" id="splitSum" aria-live="polite"></p>
+        <button type="button" class="split-link muted-link" id="toOne">Pagar con una sola cuenta</button></div>`;
+      app.querySelectorAll('.sacc').forEach(el=>el.onchange=()=>{rows[+el.dataset.i].acc=el.value;state();});
+      app.querySelectorAll('.samt').forEach(el=>el.oninput=()=>{rows[+el.dataset.i].amt=el.value;state();});
+      app.querySelectorAll('.s-del').forEach(el=>el.onclick=()=>{rows.splice(+el.dataset.i,1);drawPay();state();});
+      $('#addRow').onclick=()=>{const r=restOf();rows.push({acc:'',amt:r>0?toInput(r,c):''});drawPay();state();};
+      $('#toOne').onclick=()=>{const firstAcc=rows[0]&&rows[0].acc;split=false;rows=[];drawPay();if(firstAcc)$('#acc').value=firstAcc;state();};
+    }
+  }
+  function enterSplit(){
+    const v=total()||0, a=$('#acc')?accById(S,$('#acc').value):null;
+    if(a&&isMoney(a)&&v>a.amount) rows=[{acc:a.id,amt:toInput(a.amount,c)},{acc:'',amt:toInput(round(v-a.amount,c),c)}];
+    else if(a) rows=[{acc:a.id,amt:''},{acc:'',amt:''}];
+    else rows=[{acc:'',amt:''},{acc:'',amt:''}];
+    split=true; drawPay(); state();
+    const firstEmpty=app.querySelector('.samt[value=""]')||app.querySelector('.sacc');
+    if(firstEmpty) firstEmpty.focus();
+  }
+  function state(){
+    const v=total();
+    $('#newcatF').hidden=$('#cat').value!=='__new';
+    const catOk=$('#cat').value && ($('#cat').value!=='__new' || $('#newcat').value.trim());
+    let payOk=false;
+    if(!split){
+      const a=accById(S,$('#acc').value), sh=$('#short');
+      if(a&&isMoney(a)&&v>0&&v>a.amount){
+        sh.innerHTML=`<div class="warn-box" role="alert"><p>En <b>${esc(a.name)}</b> tenés ${fmt(a.amount,c)}. Faltan <b>${fmt(round(v-a.amount,c),c)}</b> para cubrir este gasto. Ninguna cuenta puede quedar en negativo.</p>
+          <button type="button" class="btn btn-primary btn-sm" id="doSplit">Dividir el pago con otra cuenta</button></div>`;
+        $('#doSplit').onclick=enterSplit;
+      } else { sh.innerHTML=''; payOk=!!a; }
+    } else {
+      let sum=0, ok=true; const seen=new Set();
+      rows.forEach((r,i)=>{
+        const a=accById(S,r.acc), amt=parseAmt(r.amt,c), h=app.querySelector(`.s-hint[data-i="${i}"]`); let msg='';
+        if(!a) ok=false;
+        if(amt===null||isNaN(amt)||amt<=0){ok=false; if(r.amt) msg='Revisá el monto';} else sum+=amt;
+        if(a&&seen.has(a.id)){ok=false;msg='Esta cuenta ya está en otra fila';}
+        if(a) seen.add(a.id);
+        if(a&&isMoney(a)&&amt>a.amount){ok=false;msg=`En ${a.name} tenés ${fmt(a.amount,c)}`;}
+        if(h){h.textContent=msg;h.hidden=!msg;}
+      });
+      const rest=round((v||0)-sum,c), ss=$('#splitSum');
+      if(!(v>0)) {ss.textContent='Escribí arriba el monto total del gasto.';ss.className='split-sum';}
+      else if(rest>0) {ss.innerHTML=`Repartido ${fmt(sum,c)} de ${fmt(v,c)} · <b>falta ${fmt(rest,c)}</b>`;ss.className='split-sum';}
+      else if(rest<0) {ss.innerHTML=`Repartido ${fmt(sum,c)} de ${fmt(v,c)} · <b>te pasaste ${fmt(-rest,c)}</b>`;ss.className='split-sum bad';}
+      else {ss.textContent=`✓ Repartido el total de ${fmt(v,c)}`;ss.className='split-sum done';}
+      payOk=ok&&v>0&&rest===0;
+    }
+    $('#ok').disabled=!(v>0 && catOk && $('#fd').value && payOk);
+  }
+  drawPay();
+  liveHint('am',c,state);
+  ['#cat','#fd'].forEach(s=>$(s).addEventListener('change',state));
+  $('#newcat').addEventListener('input',state);
+  $('#f').onsubmit=e=>{e.preventDefault(); state(); if($('#ok').disabled) return;
+    const v=total();
+    const parts=split?rows.map(r=>({acc:r.acc,amount:parseAmt(r.amt,c)})):[{acc:$('#acc').value,amount:v}];
+    const nm={id:old?old.id:uid(),type:'gasto',amount:v,date:$('#fd').value,ts:old?old.ts:Date.now(),desc:$('#ds').value.trim(),cat:peekCat(u),parts};
+    const bad=simulate(u,old,nm);
+    if(bad){$('#err').innerHTML=`<div class="error-box">Con este cambio, ${esc(bad.name)} quedaría en negativo. Revisá los montos o las cuentas.</div>`;return;}
+    if(!u.categories.includes(nm.cat)) u.categories.push(nm.cat);
+    commit(u,old,nm); save();
+    if(old){leave();toast('Cambios guardados');} else {backHome();toast('Gasto de '+fmt(v,c)+' registrado');}
+  };
+}
+
+function formIngreso(u){
+  const c=u.currency;
+  const old=ui.editId?(u.movements||[]).find(m=>m.id===ui.editId&&m.type==='ingreso'):null;
+  const S=shadow(u,old);
+  const money=moneyAccs(S);
+  app.innerHTML=`<div class="screen stack">${topbar(old?'Editar ingreso':'Registrar ingreso')}
+    ${old?'<p class="muted small">Al guardar, los saldos de las cuentas se corrigen solos.</p>':''}
+    <form class="stack" id="f" novalidate>
+      ${amountField('am',c,{big:true,val:old?toInput(old.amount,c):''})}
+      <div class="field"><label for="acc">Cuenta donde entra el dinero</label>
+        <div class="input-wrap"><select id="acc"><option value="">Elegí una cuenta</option>${money.map(a=>`<option value="${a.id}" ${old&&old.acc===a.id?'selected':''}>${esc(a.name)} · ${fmt(a.amount,c)}</option>`).join('')}<option value="__new">+ Crear cuenta</option></select></div></div>
+      <div class="field" id="newaccF" hidden><label for="newacc">Nombre de la cuenta nueva</label>
+        <div class="input-wrap"><input id="newacc" placeholder="Ej.: Caja de ahorro, Ualá" autocomplete="off"></div></div>
+      <div class="field"><label for="fd">Fecha</label><div class="input-wrap"><input id="fd" type="date" value="${old?old.date:today()}" max="${today()}"></div></div>
+      <div class="field"><label for="ds">Descripción <span class="opt-tag">(opcional)</span></label>
+        <div class="input-wrap"><input id="ds" placeholder="Ej.: Sueldo de octubre" autocomplete="off" value="${esc(old?old.desc||'':'')}"></div></div>
+      <div id="err" aria-live="polite"></div>
+      <button class="btn btn-primary" type="submit" id="ok" disabled>${old?'Guardar cambios':'Registrar ingreso'}</button>
+    </form></div>`;
+  const leave=()=>old?go('form',{form:'mov',movId:old.id,sub:null}):go('main',{tab:'inicio'});
+  $('#back').onclick=leave;
+  const state=()=>{
+    const v=parseAmt($('#am').value,c), sel=$('#acc').value;
+    $('#newaccF').hidden=sel!=='__new';
+    const accOk=sel && (sel!=='__new' || $('#newacc').value.trim());
+    $('#ok').disabled=!(v>0 && accOk && $('#fd').value);
+  };
+  liveHint('am',c,state);
+  ['#acc','#fd'].forEach(s=>$(s).addEventListener('change',state));
+  $('#newacc').addEventListener('input',state);
+  $('#f').onsubmit=e=>{e.preventDefault(); state(); if($('#ok').disabled) return;
+    const v=parseAmt($('#am').value,c); let accId, newAcc=null;
+    if($('#acc').value==='__new'){
+      const name=$('#newacc').value.trim();
+      if(nameTaken(u,name)){$('#err').innerHTML='<div class="error-box">Ya tenés una cuenta con ese nombre. Elegila de la lista.</div>';return;}
+      newAcc={id:uid(),name,amount:0,kind:'dinero'}; accId=newAcc.id; u.accounts.push(newAcc);
+    } else accId=$('#acc').value;
+    const nm={id:old?old.id:uid(),type:'ingreso',amount:v,date:$('#fd').value,ts:old?old.ts:Date.now(),desc:$('#ds').value.trim(),acc:accId};
+    const bad=simulate(u,old,nm);
+    if(bad){ if(newAcc) u.accounts.pop();
+      $('#err').innerHTML=`<div class="error-box">Con este cambio, ${esc(bad.name)} quedaría en negativo, porque parte de ese dinero ya se usó en otros movimientos.</div>`;return;}
+    commit(u,old,nm); save();
+    if(old){leave();toast('Cambios guardados');} else {backHome();toast('Ingreso de '+fmt(v,c)+' registrado en '+accById(u,accId).name);}
+  };
+}
+
+/* ---------- Detalle de un movimiento ---------- */
+function openMov(id){
+  const r=ui.view==='main'?{view:'main',tab:ui.tab}:{view:'form',accId:ui.accId};
+  go('form',{form:'mov',movId:id,movRet:r,sub:null});
+}
+function goMovRet(){
+  const r=ui.movRet||{view:'main',tab:'movimientos'};
+  if(r.view==='main') go('main',{tab:r.tab}); else go('form',{form:'cuenta',accId:r.accId,sub:null});
+}
+function formMov(u){
+  const c=u.currency, m=(u.movements||[]).find(x=>x.id===ui.movId);
+  if(!m){goMovRet();return;}
+  const nm=id=>{const a=accById(u,id);return a?a.name+(a.deleted?' (eliminada)':''):'Cuenta eliminada';};
+  const T={ingreso:['Ingreso','in'],gasto:['Gasto','out'],pago:['Pago','pay'],transfer:['Transferencia','pay'],nuevo_pagar:['Anotado por pagar','pay'],ajuste_pagar:['Monto por pagar actualizado','pay']}[m.type];
+  const rows=[['Fecha',esc(longDate(m.date))]];
+  if(m.type==='gasto'){rows.push(['Categoría',esc(m.cat)]);rows.push(['Pagado con',m.parts.map(p=>esc(nm(p.acc))+(m.parts.length>1?' · '+fmt(p.amount,c):'')).join('<br>')]);}
+  if(m.type==='ingreso') rows.push(['Cuenta',esc(nm(m.acc))]);
+  if(m.type==='pago'){rows.push(['Pagado desde',esc(nm(m.from))]);rows.push(['Qué pagaste',esc(nm(m.to))]);}
+  if(m.type==='transfer'){rows.push(['Desde',esc(nm(m.from))]);rows.push(['Hacia',esc(nm(m.to))]);}
+  if(m.type==='nuevo_pagar'||m.type==='ajuste_pagar') rows.push(['Cuenta',esc(nm(m.to))]);
+  if(m.desc) rows.push(['Descripción',esc(m.desc)]);
+  if(m.ts) rows.push(['Registrado',esc(new Date(m.ts).toLocaleString('es-AR',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}))]);
+  const amtTxt=m.type==='ingreso'?'+'+fmt(m.amount,c):m.type==='gasto'?'−'+fmt(m.amount,c):m.type==='ajuste_pagar'?(m.delta>0?'+':'−')+fmt(Math.abs(m.delta),c):fmt(m.amount,c);
+  const A=id=>accById(u,id)||{};
+  const fx=[];
+  if(m.type==='ingreso') fx.push(`Se descuentan ${fmt(m.amount,c)} de ${nm(m.acc)}.`);
+  if(m.type==='gasto') m.parts.forEach(p=>fx.push(isMoney(A(p.acc))?`Vuelven ${fmt(p.amount,c)} a ${nm(p.acc)}.`:`Baja ${fmt(p.amount,c)} lo que debés en ${nm(p.acc)}.`));
+  if(m.type==='pago') fx.push(`Vuelven ${fmt(m.amount,c)} a ${nm(m.from)} y sube lo mismo lo que debés en ${nm(m.to)}.`);
+  if(m.type==='transfer') fx.push(`Vuelven ${fmt(m.amount,c)} de ${nm(m.to)} a ${nm(m.from)}.`);
+  if(m.type==='nuevo_pagar') fx.push(`Baja ${fmt(m.amount,c)} lo que debés en ${nm(m.to)}.`);
+  if(m.type==='ajuste_pagar') fx.push(`${m.delta>0?'Baja':'Sube'} ${fmt(Math.abs(m.delta),c)} lo que debés en ${nm(m.to)}.`);
+  const locked=touchesDeleted(u,m), editable=(m.type==='ingreso'||m.type==='gasto')&&!locked;
+  const title=m.desc||(m.type==='gasto'?m.cat:T[0]);
+  app.innerHTML=`<div class="screen stack">${topbar()}
+    <div class="acc-head"><p class="step-label">${T[0]}</p><h1>${esc(title)}</h1><p class="acc-big ${T[1]}">${amtTxt}</p></div>
+    <div class="card" style="padding-block:6px"><div class="acc-list">${rows.map(r=>`<div class="acc-row"><span class="muted">${r[0]}</span><span class="dv">${r[1]}</span></div>`).join('')}</div></div>
+    ${ui.sub==='del'?`<div class="warn-box" role="alert"><p><b>¿Eliminar este movimiento?</b></p>${fx.map(t=>`<p>${esc(t)}</p>`).join('')}
+        <div id="err" aria-live="polite"></div>
+        <div class="btn-row"><button class="btn btn-secondary" id="cancel">Cancelar</button><button class="btn" id="del" style="background:var(--neg);color:var(--accent-fg)">Eliminar</button></div></div>`
+      :locked?`<p class="note">Este movimiento usa una cuenta eliminada, por eso no se puede editar ni eliminar.</p>`
+      :`<div class="actions">${editable?'<button class="btn btn-primary" id="edit">Editar</button>':''}<button class="btn btn-secondary" id="askDel" style="color:var(--neg)">Eliminar</button></div>
+        ${editable?'':'<p class="soft-note">Para corregir este movimiento, eliminalo y registralo de nuevo con los datos correctos.</p>'}`}
+  </div>`;
+  $('#back').onclick=()=>ui.sub?go('form',{form:'mov',movId:m.id,sub:null}):goMovRet();
+  if($('#edit')) $('#edit').onclick=()=>go('form',{form:m.type,editId:m.id,sub:null});
+  if($('#askDel')) $('#askDel').onclick=()=>go('form',{form:'mov',movId:m.id,sub:'del'});
+  if($('#cancel')) $('#cancel').onclick=()=>go('form',{form:'mov',movId:m.id,sub:null});
+  if($('#del')) $('#del').onclick=()=>{
+    const bad=simulate(u,m,null);
+    if(bad){$('#err').innerHTML=`<div class="error-box" style="background:var(--surface)">No se puede eliminar: ${esc(bad.name)} quedaría en negativo, porque ese dinero ya se usó en otros movimientos.</div>`;return;}
+    applyMov(u,m,-1); u.movements=u.movements.filter(x=>x.id!==m.id); save(); goMovRet(); toast('Movimiento eliminado');
+  };
+}
+
+function formPagar(u){
+  const c=u.currency, owe=oweAccs(u), money=moneyAccs(u);
+  if(ui.sub==='nuevo'){
+    let tipo='tarjeta';
+    app.innerHTML=`<div class="screen stack">${topbar('Anotar por pagar')}
+      <p class="muted">Anotá lo que debés hoy. No cambia tu dinero disponible: te ayuda a ver cuánto te queda libre.</p>
+      <form class="stack" id="f" novalidate>
+        <div class="field"><span style="font-size:.875rem;font-weight:600">Tipo</span>
+          <div class="chips" role="radiogroup" aria-label="Tipo">${Object.entries(OWE_TYPES).map(([k,v])=>`<button type="button" class="chip ${k===tipo?'sel':''}" role="radio" aria-checked="${k===tipo}" data-k="${k}">${v}</button>`).join('')}</div></div>
+        <div class="field"><label for="nm">Nombre</label>
+          <div class="input-wrap"><input id="nm" placeholder="Ej.: Tarjeta Visa" autocomplete="off"></div></div>
+        ${amountField('am',c,{label:'Cuánto debés hoy'})}
+        <p class="hint" id="tipoHint">Si la tarjeta no tiene saldo pendiente, poné 0. Igual la vas a poder usar para registrar gastos.</p>
+        <div id="err" aria-live="polite"></div>
+        <button class="btn btn-primary" type="submit" id="ok" disabled>Guardar</button>
+      </form></div>`;
+    bindBack('form',{form:'pagar',sub:null});
+    const ph={tarjeta:'Ej.: Tarjeta Visa',cuotas:'Ej.: Cuotas heladera',persona:'Ej.: Préstamo de mamá',otro:'Ej.: Deuda con el club'};
+    const state=()=>{const v=parseAmt($('#am').value,c);$('#ok').disabled=!($('#nm').value.trim() && v!==null && !isNaN(v));};
+    app.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{tipo=b.dataset.k;app.querySelectorAll('.chip').forEach(x=>{x.classList.toggle('sel',x===b);x.setAttribute('aria-checked',x===b);});
+      $('#nm').placeholder=ph[tipo];$('#tipoHint').hidden=tipo!=='tarjeta';});
+    liveHint('am',c,state); $('#nm').addEventListener('input',state);
+    $('#f').onsubmit=e=>{e.preventDefault(); state(); if($('#ok').disabled) return;
+      const name=$('#nm').value.trim(), v=parseAmt($('#am').value,c);
+      if(nameTaken(u,name)){$('#err').innerHTML='<div class="error-box">Ya tenés algo anotado con ese nombre.</div>';return;}
+      const a={id:uid(),name,amount:v,kind:'pagar',sub:tipo}; u.accounts.push(a);
+      if(v>0) u.movements.push({id:uid(),type:'nuevo_pagar',amount:v,date:today(),ts:Date.now(),to:a.id});
+      save(); go('form',{form:'pagar',sub:null}); toast(name+' anotado');
+    };
+    return;
+  }
+  if(ui.sub==='pago'){
+    const pend=owe.filter(a=>a.amount>0);
+    app.innerHTML=`<div class="screen stack">${topbar('Registrar un pago')}
+      <p class="muted">Por ejemplo, el resumen de la tarjeta o una cuota. Baja tu dinero y baja lo que tenés por pagar. No se cuenta como gasto otra vez.</p>
+      <form class="stack" id="f" novalidate>
+        <div class="field"><label for="to">¿Qué pagás?</label>
+          <div class="input-wrap"><select id="to"><option value="">Elegí</option>${pend.map(a=>`<option value="${a.id}">${esc(a.name)} · debés ${fmt(a.amount,c)}</option>`).join('')}</select></div></div>
+        ${amountField('am',c,{big:true})}
+        <div><button type="button" class="link" id="all" hidden>Pagar el total</button></div>
+        <div class="field"><label for="from">Pagado desde</label>
+          <div class="input-wrap"><select id="from"><option value="">Elegí una cuenta</option>${money.map(a=>`<option value="${a.id}">${esc(a.name)} · ${fmt(a.amount,c)}</option>`).join('')}</select></div></div>
+        <div class="field"><label for="fd">Fecha</label><div class="input-wrap"><input id="fd" type="date" value="${today()}" max="${today()}"></div></div>
+        <div id="err" aria-live="polite"></div>
+        <button class="btn btn-primary" type="submit" id="ok" disabled>Registrar pago</button>
+      </form></div>`;
+    bindBack('form',{form:'pagar',sub:null});
+    const state=()=>{
+      const v=parseAmt($('#am').value,c), to=accById(u,$('#to').value), from=accById(u,$('#from').value);
+      $('#all').hidden=!to; if(to) $('#all').textContent='Pagar el total: '+fmt(to.amount,c);
+      let msg='';
+      if(to && v>to.amount) msg=`Es más de lo que debés en ${esc(to.name)} (${fmt(to.amount,c)}).`;
+      else if(from && v>from.amount) msg=`En ${esc(from.name)} tenés ${fmt(from.amount,c)}. Elegí otra cuenta o pagá menos: ninguna cuenta puede quedar en negativo.`;
+      $('#err').innerHTML=msg?`<div class="error-box">${msg}</div>`:'';
+      $('#ok').disabled=!(v>0 && to && from && !msg && $('#fd').value);
+    };
+    liveHint('am',c,state);
+    ['#to','#from','#fd'].forEach(s=>$(s).addEventListener('change',state));
+    $('#all').onclick=()=>{const to=accById(u,$('#to').value);if(to){$('#am').value=String(to.amount).replace('.',decSep(c));$('#am').dispatchEvent(new Event('input'));}};
+    $('#f').onsubmit=e=>{e.preventDefault(); state(); if($('#ok').disabled) return;
+      const v=parseAmt($('#am').value,c), to=accById(u,$('#to').value), from=accById(u,$('#from').value);
+      from.amount=round(from.amount-v,c); to.amount=round(to.amount-v,c);
+      u.movements.push({id:uid(),type:'pago',amount:v,date:$('#fd').value,ts:Date.now(),from:from.id,to:to.id});
+      save(); go('form',{form:'pagar',sub:null}); toast('Pago de '+fmt(v,c)+' registrado');
+    };
+    return;
+  }
+  // Resumen de "Por pagar"
+  const tot=totalOwe(u);
+  app.innerHTML=`<div class="screen stack">${topbar('Por pagar')}
+    <div class="card stack-s">
+      <div class="total-row"><span class="muted">Total por pagar</span><span class="v">${fmt(tot,c)}</span></div>
+      <div class="total-row small"><span class="muted">Tu dinero disponible</span><span class="num" style="font-weight:600">${fmt(total(u),c)}</span></div>
+      <div class="total-row small"><span class="muted">Te queda libre</span><span class="num" style="font-weight:600">${fmt(total(u)-tot,c)}</span></div>
+    </div>
+    ${owe.length?`<div class="card" style="padding-block:8px"><div class="acc-list">${owe.map(a=>`<div class="acc-row"><span>${esc(a.name)}<span class="kind">${OWE_TYPES[a.sub]||'Otro'}</span></span><span>${fmt(a.amount,c)}</span></div>`).join('')}</div></div>`
+      :`<p class="note">Todavía no anotaste nada. Sumá tus tarjetas de crédito, cuotas o préstamos para ver cuánto te queda libre.</p>`}
+    <div class="actions">
+      <button class="btn btn-primary" id="nuevo">Anotar algo por pagar</button>
+      ${owe.some(a=>a.amount>0)?'<button class="btn btn-secondary" id="pago">Registrar un pago</button>':''}
+    </div>
+    <p class="soft-note">Cuando pagás algo con tarjeta, registralo como gasto eligiendo la tarjeta en "Pagado con". Se suma acá automáticamente.</p>
+  </div>`;
+  bindBack('main',{tab:'inicio'});
+  $('#nuevo').onclick=()=>go('form',{form:'pagar',sub:'nuevo'});
+  if($('#pago')) $('#pago').onclick=()=>go('form',{form:'pagar',sub:'pago'});
+}
+
+function openMenu(mode){
+  const u=me();
+  let inner;
+  if(mode==='reset') inner=`<h2>¿Borrar los datos del prototipo?</h2><p class="muted">Se eliminan los perfiles creados y sus movimientos. El usuario admin vuelve a sus datos de ejemplo.</p>
+      <div class="btn-row"><button class="btn btn-secondary" id="cx">Cancelar</button><button class="btn btn-primary" id="ok" style="background:var(--neg);color:var(--accent-fg)">Borrar</button></div>`;
+  else if(mode==='name') inner=`<h2>Tu nombre</h2>
+      <form class="stack" id="nf" novalidate><div class="field"><label for="mn">Así te saludamos en la app</label>
+        <div class="input-wrap"><input id="mn" autocomplete="given-name" value="${esc(u.name||'')}" placeholder="Ej.: Leo"></div></div>
+        <div class="btn-row"><button type="button" class="btn btn-secondary" id="cx">Cancelar</button><button class="btn btn-primary" type="submit" id="ok">Guardar</button></div></form>`;
+  else inner=`<div><p style="font-weight:600">${esc(displayName(u))}</p><p class="muted small">${esc(u.email||'')} · Moneda ${esc(u.currency||'')}</p></div>
+      <button class="btn btn-secondary" id="nm">Cambiar mi nombre</button>
+      <button class="btn btn-secondary" id="out">Cerrar sesión</button>
+      <button class="btn btn-ghost" id="reset">Borrar datos del prototipo</button>`;
+  overlay.innerHTML=`<div class="scrim" id="scrim"><div class="sheet stack" role="dialog" aria-label="Menú">${inner}</div></div>`;
+  const q=sel=>overlay.querySelector(sel), close=()=>{overlay.innerHTML='';};
+  q('#scrim').onclick=e=>{if(e.target.id==='scrim')close();};
+  if(mode==='reset'){
+    q('#cx').onclick=close;
+    q('#ok').onclick=()=>{db=seed();save();close();go('welcome');toast('Datos borrados');};
+  } else if(mode==='name'){
+    const inp=q('#mn'); inp.focus();
+    q('#cx').onclick=()=>openMenu();
+    q('#nf').onsubmit=e=>{e.preventDefault();const v=inp.value.trim();if(!v){inp.focus();return;}u.name=v;save();close();render();toast('Listo, '+v);};
+  } else {
+    q('#nm').onclick=()=>openMenu('name');
+    q('#out').onclick=()=>{db.session=null;save();close();go('welcome');};
+    q('#reset').onclick=()=>openMenu('reset');
+  }
+}
+
+// Al abrir: si hay sesión, retomar donde quedó
+const u0=me();
+if(u0.email){ ui.view=u0.onboarded?'main':'onboarding'; }
+render();
+})();
+</script>
