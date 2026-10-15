@@ -108,12 +108,12 @@ const total = plain(await vis(page.getByText(/^\$\s/)).textContent());
 step(`Paso 6 · Cierre: total ${total}`); await shot('c6-cierre');
 if (total !== '$ 297.346,17') throw new Error(`Total esperado $ 297.346,17, llegó ${total}`);
 await button('Continuar').click();
-await text('Ya iniciaste sesión').waitFor();
+await text('Dinero disponible').waitFor();
 step('Continuar → Inicio');
 
 // Ya no vuelve a la configuración
 await page.reload();
-await text('Ya iniciaste sesión').waitFor();
+await text('Dinero disponible').waitFor();
 step('Recargó → sigue en Inicio (la configuración se hace una sola vez)');
 
 const real = errors.filter((e) => !e.includes('400') && !e.includes('409'));

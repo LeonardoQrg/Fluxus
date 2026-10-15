@@ -27,7 +27,7 @@ App Android para controlar el dinero del hogar: cuánto tenés, cuánto entra, c
 - [x] Etapa 4 · Inicio y registro: Inicio, registrar gasto (con pago dividido), registrar ingreso, Por pagar
 - [x] Etapa 5 · Cuentas: tarjetas, detalle, nueva cuenta, cambiar nombre, ajustar, transferir, eliminar
 - [x] Etapa 6 · Movimientos: lista, filtros, detalle, editar, eliminar
-- [ ] Etapa 7 · Informe, estilo final y logo
+- [x] Etapa 7 · Informe, estilo final y logo: los cinco bloques del informe, colores, tipografía e ícono de la app
 
 ## Poner en marcha
 
@@ -36,6 +36,17 @@ App Android para controlar el dinero del hogar: cuánto tenés, cuánto entra, c
 3. Aplicar la base de datos en Supabase: abrir **SQL Editor** y correr, en orden, los archivos de
    `supabase/migrations/`.
 4. Iniciar la app: `npx expo start` y escanear el código QR con **Expo Go** en el celular.
+
+## Generar la app para instalar en Android
+
+Con [EAS Build](https://docs.expo.dev/build/introduction/) (en la nube, no hace falta Android Studio):
+
+```sh
+npx eas-cli@latest build --platform android --profile preview      # APK para instalar directo en el celular
+npx eas-cli@latest build --platform android --profile production   # para subir a Google Play
+```
+
+Los íconos se generan desde el logo con `node tools/generar-iconos.mjs`.
 
 ## Pruebas
 
@@ -48,6 +59,9 @@ npm run typecheck # revisa los tipos de TypeScript
 ```
 
 En GitHub corren solas en cada cambio (`.github/workflows/pruebas.yml`).
+
+Además hay pruebas de punta a punta que recorren cada pantalla en un navegador con tamaño de
+celular, contra un Supabase de prueba local: ver `tools/supabase-local/README.md` y `tools/e2e/`.
 
 ## Cómo funcionan los saldos
 
