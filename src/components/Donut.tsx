@@ -52,7 +52,7 @@ export function Donut({
           );
         })}
       </Svg>
-      <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center', paddingHorizontal: size * 0.22 }}>
+      <View pointerEvents="none" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, alignItems: 'center', justifyContent: 'center', paddingHorizontal: size * 0.17 }}>
         {children}
       </View>
     </View>

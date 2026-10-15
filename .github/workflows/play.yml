@@ -1,0 +1,75 @@
+# Fabrica el archivo para subir a Google Play (.aab), firmado con la clave de subida de Fluxus,
+# y lo publica en "Releases" como versión de Play:
+#   github.com/LeonardoQrg/Fluxus/releases
+# Se ejecuta a mano: Actions → "Archivo para Google Play" → Run workflow.
+# Necesita 4 Secrets en GitHub (ver claves/COPIAR-A-GITHUB.txt):
+#   FLUXUS_KEYSTORE_BASE64, FLUXUS_KEYSTORE_PASSWORD, FLUXUS_KEY_ALIAS, FLUXUS_KEY_PASSWORD
+name: Archivo para Google Play
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  aab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      FLUXUS_KEYSTORE_PASSWORD: ${{ secrets.FLUXUS_KEYSTORE_PASSWORD }}
+      FLUXUS_KEY_ALIAS: ${{ secrets.FLUXUS_KEY_ALIAS }}
+      FLUXUS_KEY_PASSWORD: ${{ secrets.FLUXUS_KEY_PASSWORD }}
+      VERSION_CODE: ${{ github.run_number }}
+    steps:
+      - name: Revisar que estén cargados los Secrets
+        env:
+          KS: ${{ secrets.FLUXUS_KEYSTORE_BASE64 }}
+        run: |
+          for v in KS FLUXUS_KEYSTORE_PASSWORD FLUXUS_KEY_ALIAS FLUXUS_KEY_PASSWORD; do
+            if [ -z "${!v}" ]; then echo "::error::Falta el Secret correspondiente a $v. Hay que cargarlo en Settings → Secrets and variables → Actions."; exit 1; fi
+          done
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: gradle/actions/setup-gradle@v4
+      - run: npm ci
+      - name: Guardar la clave de firma (solo existe durante esta compilación)
+        env:
+          KS: ${{ secrets.FLUXUS_KEYSTORE_BASE64 }}
+        run: |
+          echo "$KS" | base64 -d > "$RUNNER_TEMP/fluxus-subida.jks"
+          echo "FLUXUS_KEYSTORE=$RUNNER_TEMP/fluxus-subida.jks" >> "$GITHUB_ENV"
+      - name: Generar el proyecto Android
+        run: npx expo prebuild --platform android --no-install
+        env:
+          CI: 1
+      - name: Compilar
+        working-directory: android
+        run: ./gradlew bundleRelease --no-daemon
+        env:
+          NODE_ENV: production
+      - name: Verificar la firma
+        run: |
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          jarsigner -verify -verbose:summary -certs "$AAB" | tail -15
+          keytool -printcert -jarfile "$AAB" | grep -E "Owner|SHA256"
+          if keytool -printcert -jarfile "$AAB" | grep -q "Android Debug"; then
+            echo "::error::El archivo quedó firmado con la clave de prueba, no con la de Fluxus."; exit 1
+          fi
+      - name: Publicar
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/bundle/release/app-release.aab fluxus.aab
+          gh release create "play-${{ github.run_number }}" fluxus.aab \
+            --target "${{ github.sha }}" \
+            --prerelease \
+            --title "Archivo para Google Play (versión ${{ github.run_number }})" \
+            --notes "Archivo .aab firmado para subir a Google Play. Número de versión: ${{ github.run_number }}. Commit ${{ github.sha }}."

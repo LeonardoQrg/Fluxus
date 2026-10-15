@@ -42,3 +42,8 @@ yarn-error.*
 
 # Datos de conexión (no se suben al repositorio)
 .env
+
+# Claves de firma de la app (NUNCA se suben al repositorio)
+claves/
+*.jks
+*.keystore

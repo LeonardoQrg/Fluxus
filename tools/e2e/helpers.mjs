@@ -37,9 +37,9 @@ export async function prepareUser({ name = 'Leo', currency = 'ARS', accounts = [
   return { email, password, ids, rpc };
 }
 
-export async function openBrowser() {
+export async function openBrowser({ width = 390, height = 844, scale = 2 } = {}) {
   const browser = await chromium.launch({ args: ['--no-proxy-server'] });
-  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+  const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: scale });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => m.type() === 'error' && !/status of 4\d\d/.test(m.text()) && errors.push(m.text()));

@@ -88,7 +88,7 @@ export default function Informe() {
               <Txt size={12} color={colors.textMuted} center numberOfLines={2}>
                 {hi ? hi.label : `Gastos de ${mname}`}
               </Txt>
-              <Txt weight="bold" size={20} tabular center numberOfLines={1} adjustsFontSizeToFit>
+              <Txt weight="bold" size={17} tabular center numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
                 {formatMoney(hi ? hi.value : expense, c)}
               </Txt>
               {hi ? (
