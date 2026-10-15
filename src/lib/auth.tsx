@@ -22,6 +22,8 @@ type AuthState = {
   profile: Profile | null;
   /** La persona entró desde el enlace de "Olvidé mi contraseña" y tiene que elegir una nueva */
   recovering: boolean;
+  /** No se pudo cargar el perfil (por ejemplo, sin conexión) */
+  profileError: boolean;
   /** El enlace de recuperación venció o ya se usó */
   linkError: string | null;
   clearLinkError: () => void;
@@ -59,6 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [recovering, setRecovering] = useState(false);
   const [linkError, setLinkError] = useState<string | null>(null);
+  const [profileError, setProfileError] = useState(false);
 
   const userId = session?.user.id ?? null;
 
@@ -67,11 +70,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setProfile(null);
       return;
     }
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('profiles')
       .select('user_id, name, currency, onboarding_step, hide_owe_tip')
       .eq('user_id', uid)
       .maybeSingle();
+    setProfileError(!!error || !data);
     setProfile((data as Profile | null) ?? null);
   }, []);
 
@@ -126,6 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     profile,
     recovering,
     linkError,
+    profileError,
     clearLinkError: () => setLinkError(null),
     finishRecovery: () => setRecovering(false),
     refreshProfile: () => loadProfile(userId),

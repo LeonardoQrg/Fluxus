@@ -14,17 +14,19 @@ type CurrencyInfo = {
   decimals: number;
   /** Separador decimal al escribir y mostrar montos */
   decimalSeparator: ',' | '.';
+  /** Símbolo que se muestra delante de los campos de monto */
+  symbol: string;
 };
 
 export const CURRENCIES: Record<CurrencyCode, CurrencyInfo> = {
-  ARS: { name: 'Peso argentino', locale: 'es-AR', decimals: 2, decimalSeparator: ',' },
-  USD: { name: 'Dólar estadounidense', locale: 'en-US', decimals: 2, decimalSeparator: '.' },
-  CLP: { name: 'Peso chileno', locale: 'es-CL', decimals: 0, decimalSeparator: ',' },
-  UYU: { name: 'Peso uruguayo', locale: 'es-UY', decimals: 2, decimalSeparator: ',' },
-  MXN: { name: 'Peso mexicano', locale: 'es-MX', decimals: 2, decimalSeparator: '.' },
-  COP: { name: 'Peso colombiano', locale: 'es-CO', decimals: 0, decimalSeparator: ',' },
-  PEN: { name: 'Sol peruano', locale: 'es-PE', decimals: 2, decimalSeparator: '.' },
-  EUR: { name: 'Euro', locale: 'es-ES', decimals: 2, decimalSeparator: ',' },
+  ARS: { name: 'Peso argentino', locale: 'es-AR', decimals: 2, decimalSeparator: ',', symbol: '$' },
+  USD: { name: 'Dólar estadounidense', locale: 'en-US', decimals: 2, decimalSeparator: '.', symbol: 'US$' },
+  CLP: { name: 'Peso chileno', locale: 'es-CL', decimals: 0, decimalSeparator: ',', symbol: '$' },
+  UYU: { name: 'Peso uruguayo', locale: 'es-UY', decimals: 2, decimalSeparator: ',', symbol: '$' },
+  MXN: { name: 'Peso mexicano', locale: 'es-MX', decimals: 2, decimalSeparator: '.', symbol: '$' },
+  COP: { name: 'Peso colombiano', locale: 'es-CO', decimals: 0, decimalSeparator: ',', symbol: '$' },
+  PEN: { name: 'Sol peruano', locale: 'es-PE', decimals: 2, decimalSeparator: '.', symbol: 'S/' },
+  EUR: { name: 'Euro', locale: 'es-ES', decimals: 2, decimalSeparator: ',', symbol: '€' },
 };
 
 export const CURRENCY_CODES = Object.keys(CURRENCIES) as CurrencyCode[];
@@ -95,4 +97,18 @@ export function toInputText(minor: number, currency: CurrencyCode): string {
   const { decimals, decimalSeparator } = CURRENCIES[currency];
   const text = fromMinor(minor, currency).toFixed(decimals);
   return decimals > 0 ? text.replace('.', decimalSeparator) : text;
+}
+
+/** Lo que se muestra debajo de un campo de monto mientras se escribe */
+export function amountHint(text: string, currency: CurrencyCode): string {
+  const v = parseAmount(text, currency);
+  if (v === null) return '';
+  if (Number.isNaN(v)) return 'Revisá el número: usá solo cifras';
+  return `Se va a guardar ${formatMoney(v, currency)}`;
+}
+
+/** Ejemplo para el campo vacío: "0,00" en ARS, "0" en CLP */
+export function amountPlaceholder(currency: CurrencyCode): string {
+  const { decimals, decimalSeparator } = CURRENCIES[currency];
+  return decimals ? `0${decimalSeparator}${'0'.repeat(decimals)}` : '0';
 }

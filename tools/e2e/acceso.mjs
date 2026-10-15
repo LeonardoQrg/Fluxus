@@ -15,6 +15,7 @@ page.on('pageerror', (e) => errors.push(e.message));
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
 const shot = (n) => page.screenshot({ path: `${SHOTS}/${n}.png` });
 const step = (s) => console.log('→', s);
+const logout = async () => { await page.evaluate(() => localStorage.clear()); await page.goto(BASE); };
 const email = `leo${Date.now()}@correo.com`;
 
 await page.goto(BASE);
@@ -54,7 +55,7 @@ await page.reload();
 await page.getByText('Hola, Leo').filter({ visible: true }).first().waitFor();
 step('Recargó y sigue con la sesión iniciada');
 
-await page.getByText('Cerrar sesión').filter({ visible: true }).first().click();
+await logout();
 await page.getByText('Tu dinero, en movimiento y en orden.').filter({ visible: true }).first().waitFor();
 step('Cerró sesión → bienvenida');
 
@@ -80,7 +81,7 @@ await page.getByLabel('Repetir contraseña').filter({ visible: true }).fill('otr
 await page.getByRole('button', { name: 'Guardar contraseña' }).filter({ visible: true }).click();
 await page.getByText('Hola, Leo').filter({ visible: true }).first().waitFor();
 step('Guardó la contraseña nueva → entró');
-await page.getByText('Cerrar sesión').filter({ visible: true }).first().click();
+await logout();
 await page.getByText('Iniciar sesión').filter({ visible: true }).first().click();
 await page.getByLabel('Correo electrónico').filter({ visible: true }).fill(email);
 await page.getByLabel('Contraseña', { exact: true }).filter({ visible: true }).fill('otra1234');
@@ -89,7 +90,7 @@ await page.getByText('Hola, Leo').filter({ visible: true }).first().waitFor();
 step('Entró con la contraseña nueva');
 
 // Usuario de prueba
-await page.getByText('Cerrar sesión').filter({ visible: true }).first().click();
+await logout();
 await page.getByText('Iniciar sesión').filter({ visible: true }).first().click();
 await page.getByLabel('Correo electrónico').filter({ visible: true }).fill('admin@gmail.com');
 await page.getByLabel('Contraseña', { exact: true }).filter({ visible: true }).fill('admin');

@@ -77,3 +77,14 @@ describe('toInputText', () => {
     }
   });
 });
+
+describe('ayudas de los campos de monto', () => {
+  it('muestra cómo se va a guardar', async () => {
+    const { amountHint, amountPlaceholder } = await import('./money');
+    expect(amountHint('', 'ARS')).toBe('');
+    expect(plain(amountHint('1500.5', 'ARS'))).toBe('Se va a guardar $ 1.500,50');
+    expect(amountHint('12a', 'ARS')).toBe('Revisá el número: usá solo cifras');
+    expect(amountPlaceholder('ARS')).toBe('0,00');
+    expect(amountPlaceholder('CLP')).toBe('0');
+  });
+});

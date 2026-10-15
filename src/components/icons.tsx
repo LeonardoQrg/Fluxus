@@ -45,3 +45,21 @@ export function LogoMark({ size = 36, color = colors.accent }: IconProps) {
     </Svg>
   );
 }
+
+export function WalletIcon({ size = 22, color = colors.income }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round">
+      <Path d="M4 7h15a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a2 2 0 0 1 2-2h11v3" />
+      <Circle cx={16} cy={13.5} r={1.3} fill={color} />
+    </Svg>
+  );
+}
+
+export function CardIcon({ size = 22, color = colors.accent }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round">
+      <Path d="M5 5.5h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z" />
+      <Path d="M3 10h18M7 15h4" />
+    </Svg>
+  );
+}
