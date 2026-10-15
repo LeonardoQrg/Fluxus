@@ -9,17 +9,20 @@ App Android para controlar el dinero del hogar: cuánto tenés, cuánto entra, c
 
 | Carpeta / archivo | Qué hay |
 | --- | --- |
-| `App.tsx` | La pantalla de entrada de la app |
+| `src/app/` | Las pantallas (cada archivo es una pantalla) |
+| `src/components/` | Piezas visuales comunes: botones, campos, avisos |
+| `src/lib/auth.tsx` | Sesión y perfil de la persona |
 | `src/lib/money.ts` | Formato de montos y monedas |
 | `src/lib/supabase.ts` | Conexión con Supabase |
 | `src/theme.ts` | Colores |
 | `supabase/migrations/` | La base de datos: tablas, seguridad y reglas de saldos |
 | `tests/` | Pruebas automáticas de las reglas de saldos |
+| `tools/supabase-local/` | Supabase de prueba para desarrollar sin cuenta (ver su README) |
 
 ## Estado
 
 - [x] Etapa 1 · Base: proyecto Expo, tablas, seguridad, funciones del servidor y pruebas
-- [ ] Etapa 2 · Acceso
+- [x] Etapa 2 · Acceso: bienvenida, crear perfil, iniciar sesión, recuperar contraseña
 - [ ] Etapa 3 · Configuración inicial
 - [ ] Etapa 4 · Inicio y registro
 - [ ] Etapa 5 · Cuentas

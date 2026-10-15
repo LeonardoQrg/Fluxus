@@ -23,3 +23,24 @@ export const categoryColors = ['#3987E5', '#D95926', '#199E70', '#C98500', '#D55
 export const otherCategoryColor = '#566176';
 
 export const categoryColor = (sortOrder: number) => categoryColors[sortOrder] ?? otherCategoryColor;
+
+/** Tipografía Sora. En Android cada grosor es un archivo distinto, por eso se elige por nombre. */
+export const fonts = {
+  regular: 'Sora_400Regular',
+  medium: 'Sora_500Medium',
+  semibold: 'Sora_600SemiBold',
+  bold: 'Sora_700Bold',
+  extrabold: 'Sora_800ExtraBold',
+} as const;
+
+export type FontWeight = keyof typeof fonts;
+
+/** Fondos suaves para avisos (de los colores del prototipo) */
+export const soft = {
+  accent: '#123545',
+  income: '#11322C',
+  expense: '#3A1832',
+  surface2: '#0E1630',
+} as const;
+
+export const radius = { field: 12, card: 18 } as const;

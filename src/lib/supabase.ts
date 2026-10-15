@@ -8,7 +8,7 @@ import { AppState, Platform } from 'react-native';
 export const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
 export const SUPABASE_KEY = process.env.EXPO_PUBLIC_SUPABASE_KEY ?? '';
 
-export const isConfigured = SUPABASE_URL.startsWith('https://') && SUPABASE_KEY.length > 0;
+export const isConfigured = /^https?:\/\//.test(SUPABASE_URL) && SUPABASE_KEY.length > 0;
 
 export const supabase = createClient(isConfigured ? SUPABASE_URL : 'https://sin-configurar.supabase.co', SUPABASE_KEY || 'x', {
   auth: {
@@ -26,17 +26,6 @@ if (Platform.OS !== 'web') {
     if (state === 'active') supabase.auth.startAutoRefresh();
     else supabase.auth.stopAutoRefresh();
   });
-}
-
-/** Verifica que el servidor de Supabase responda. */
-export async function checkConnection(): Promise<boolean> {
-  if (!isConfigured) return false;
-  try {
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/health`, { headers: { apikey: SUPABASE_KEY } });
-    return res.ok;
-  } catch {
-    return false;
-  }
 }
 
 /** Error que devuelven las funciones del servidor (ver supabase/migrations/…_funciones.sql). */
