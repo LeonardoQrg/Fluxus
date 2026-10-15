@@ -277,6 +277,15 @@ function Menu({ visible, onClose }: { visible: boolean; onClose: () => void }) {
               signOut();
             }}
           />
+          <Button
+            title="Eliminar mi cuenta"
+            variant="ghost"
+            textColor={colors.expense}
+            onPress={() => {
+              close();
+              router.push('/eliminar-cuenta');
+            }}
+          />
         </>
       )}
     </Sheet>
