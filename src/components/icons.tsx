@@ -63,3 +63,86 @@ export function CardIcon({ size = 22, color = colors.accent }: IconProps) {
     </Svg>
   );
 }
+
+export function UpIcon({ size = 18, color = colors.income }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M12 19V5M6 11l6-6 6 6" />
+    </Svg>
+  );
+}
+
+export function DownIcon({ size = 18, color = colors.expense }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M12 5v14M6 13l6 6 6-6" />
+    </Svg>
+  );
+}
+
+export function SwapIcon({ size = 18, color = colors.accent }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M4 8h14l-4-4M20 16H6l4 4" />
+    </Svg>
+  );
+}
+
+export function HomeIcon({ size = 24, color = colors.textMuted }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round">
+      <Path d="M3.5 10.5L12 3.5l8.5 7V20a1 1 0 0 1-1 1H15v-6H9v6H4.5a1 1 0 0 1-1-1z" />
+    </Svg>
+  );
+}
+
+export function ListIcon({ size = 24, color = colors.textMuted }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round">
+      <Path d="M9 6h11M9 12h11M9 18h11" />
+      <Circle cx={4.5} cy={6} r={1} fill={color} />
+      <Circle cx={4.5} cy={12} r={1} fill={color} />
+      <Circle cx={4.5} cy={18} r={1} fill={color} />
+    </Svg>
+  );
+}
+
+export function ChartIcon({ size = 24, color = colors.textMuted }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round">
+      <Path d="M4 20h16M7 16v-5M12 16V6M17 16v-8" />
+    </Svg>
+  );
+}
+
+export function SplitIcon({ size = 18, color = colors.accent }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M12 20v-7M12 13L6 6M12 13l6-7M6 6v4M6 6h4M18 6v4M18 6h-4" />
+    </Svg>
+  );
+}
+
+export function ChevronDownIcon({ size = 20, color = colors.textMuted }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M6 9l6 6 6-6" />
+    </Svg>
+  );
+}
+
+export function ChevronIcon({ size = 20, color = colors.text, left }: IconProps & { left?: boolean }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d={left ? 'M15 18l-6-6 6-6' : 'M9 6l6 6-6 6'} />
+    </Svg>
+  );
+}
+
+export function CalendarIcon({ size = 20, color = colors.textMuted }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zM4 10h16M8 3v4M16 3v4" />
+    </Svg>
+  );
+}

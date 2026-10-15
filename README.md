@@ -24,7 +24,7 @@ App Android para controlar el dinero del hogar: cuánto tenés, cuánto entra, c
 - [x] Etapa 1 · Base: proyecto Expo, tablas, seguridad, funciones del servidor y pruebas
 - [x] Etapa 2 · Acceso: bienvenida, crear perfil, iniciar sesión, recuperar contraseña
 - [x] Etapa 3 · Configuración inicial: los seis pasos, retomando donde quedó
-- [ ] Etapa 4 · Inicio y registro
+- [x] Etapa 4 · Inicio y registro: Inicio, registrar gasto (con pago dividido), registrar ingreso, Por pagar
 - [ ] Etapa 5 · Cuentas
 - [ ] Etapa 6 · Movimientos
 - [ ] Etapa 7 · Informe, estilo final y logo

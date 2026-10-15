@@ -11,6 +11,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ToastProvider } from '../components/Toast';
 import { AuthProvider, useAuth } from '../lib/auth';
 import { colors } from '../theme';
 
@@ -28,9 +29,11 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider style={{ backgroundColor: colors.background }}>
       <StatusBar style="light" />
-      <AuthProvider>
-        <Navigation fontsReady={fontsLoaded || !!fontError} />
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <Navigation fontsReady={fontsLoaded || !!fontError} />
+        </AuthProvider>
+      </ToastProvider>
     </SafeAreaProvider>
   );
 }
