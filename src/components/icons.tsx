@@ -146,3 +146,12 @@ export function CalendarIcon({ size = 20, color = colors.textMuted }: IconProps)
     </Svg>
   );
 }
+
+export function SearchIcon({ size = 20, color = colors.textMuted }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round">
+      <Circle cx={11} cy={11} r={6.5} />
+      <Path d="M16 16l4.5 4.5" />
+    </Svg>
+  );
+}

@@ -80,3 +80,16 @@ export function todayTitle(now = new Date()): string {
   const l = longDate(today(now), now);
   return l[0].toUpperCase() + l.slice(1);
 }
+
+/** "Este mes (octubre)", "Mes pasado (septiembre)" o "Agosto 2026" */
+export function monthLabel(ym: string, now = new Date()): string {
+  if (ym === monthKey(0, now)) return `Este mes (${monthName(ym)})`;
+  if (ym === monthKey(1, now)) return `Mes pasado (${monthName(ym)})`;
+  return monthTitle(ym);
+}
+
+/** Fecha y hora de registro: "15 oct 2026, 14:05" */
+export function dateTime(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getDate()} ${SHORT_MONTHS[d.getMonth()]} ${d.getFullYear()}, ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}

@@ -51,6 +51,7 @@ export async function openBrowser() {
     text: (t) => vis(page.getByText(t)),
     label: (t) => vis(page.getByLabel(t, { exact: true })),
     button: (t) => vis(page.getByRole('button', { name: t, exact: true })),
+    link: (t) => vis(page.getByRole('link', { name: t, exact: true })),
     radio: (t) => vis(page.getByRole('radio', { name: t })),
     /** Abre un campo de selección y elige una opción */
     async choose(fieldLabel, option) {
