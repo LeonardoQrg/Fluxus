@@ -25,7 +25,7 @@ App Android para controlar el dinero del hogar: cuánto tenés, cuánto entra, c
 - [x] Etapa 2 · Acceso: bienvenida, crear perfil, iniciar sesión, recuperar contraseña
 - [x] Etapa 3 · Configuración inicial: los seis pasos, retomando donde quedó
 - [x] Etapa 4 · Inicio y registro: Inicio, registrar gasto (con pago dividido), registrar ingreso, Por pagar
-- [ ] Etapa 5 · Cuentas
+- [x] Etapa 5 · Cuentas: tarjetas, detalle, nueva cuenta, cambiar nombre, ajustar, transferir, eliminar
 - [ ] Etapa 6 · Movimientos
 - [ ] Etapa 7 · Informe, estilo final y logo
 

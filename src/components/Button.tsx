@@ -4,16 +4,19 @@ import { Txt } from './Txt';
 
 type Props = Omit<PressableProps, 'children'> & {
   title: string;
-  variant?: 'primary' | 'secondary' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   loading?: boolean;
   small?: boolean;
   icon?: React.ReactNode;
+  /** Color del texto (por ejemplo, rojo para "Eliminar") */
+  textColor?: string;
 };
 
-export function Button({ title, variant = 'primary', loading, disabled, small, icon, style, ...rest }: Props) {
+export function Button({ title, variant = 'primary', loading, disabled, small, icon, textColor, style, ...rest }: Props) {
   const off = disabled || loading;
-  const bg = off && variant === 'primary' ? colors.disabled : variant === 'primary' ? colors.accent : variant === 'secondary' ? colors.surface : 'transparent';
-  const fg = off && variant === 'primary' ? colors.onDisabled : variant === 'primary' ? colors.onAccent : variant === 'ghost' ? colors.accent : colors.text;
+  const filled = variant === 'primary' || variant === 'danger';
+  const bg = off && filled ? colors.disabled : variant === 'primary' ? colors.accent : variant === 'danger' ? colors.expense : variant === 'secondary' ? colors.surface : 'transparent';
+  const fg = off && filled ? colors.onDisabled : filled ? colors.onAccent : variant === 'ghost' ? colors.accent : colors.text;
 
   return (
     <Pressable
@@ -38,7 +41,7 @@ export function Button({ title, variant = 'primary', loading, disabled, small, i
     >
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         {loading ? <ActivityIndicator color={fg} /> : icon}
-        <Txt weight="semibold" size={small ? 15 : 16} color={fg}>
+        <Txt weight="semibold" size={small ? 15 : 16} color={textColor ?? fg}>
           {title}
         </Txt>
       </View>
