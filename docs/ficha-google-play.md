@@ -15,7 +15,7 @@ Textos y respuestas listas para copiar y pegar en Play Console. Las imágenes es
 | Capturas de teléfono (1170 × 2340) | `assets/store/captura-1-inicio.png` … `captura-5-informe.png` |
 | Política de privacidad | `https://leonardoqrg.github.io/Fluxus/privacidad.html` |
 | Cómo eliminar la cuenta (web) | `https://leonardoqrg.github.io/Fluxus/eliminar-cuenta.html` |
-| Correo de contacto | el que elijas mostrar públicamente |
+| Correo de contacto | arieleoq@gmail.com |
 
 ## Descripción completa
 
@@ -82,6 +82,6 @@ Fluxus: tu dinero, en movimiento y en orden.
 ## Pendientes antes de enviar a revisión
 
 - [ ] Cuenta de prueba para el revisor de Google (correo y contraseña) creada en el proyecto de Supabase real, con algunos datos cargados. Se borra después de la aprobación.
-- [ ] Elegir el correo de contacto público y reemplazar `CORREO_DE_CONTACTO` en `sitio/privacidad.html` y `sitio/eliminar-cuenta.html`.
+- [x] Correo de contacto público: arieleoq@gmail.com (en `sitio/privacidad.html` y `sitio/eliminar-cuenta.html`).
 - [ ] Activar GitHub Pages (Settings → Pages → Source: GitHub Actions).
 - [ ] Prueba cerrada: 12 personas, 14 días seguidos.
