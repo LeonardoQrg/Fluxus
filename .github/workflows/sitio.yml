@@ -1,11 +1,14 @@
 # Publica la carpeta sitio/ (política de privacidad, etc.) en GitHub Pages:
 #   https://leonardoqrg.github.io/Fluxus/privacidad.html
-# Se ejecuta a mano (Actions → "Sitio web" → Run workflow) cuando el contenido está listo.
+# Se publica solo cuando cambia algo dentro de sitio/.
 # Requiere activar una vez: Settings → Pages → Source: "GitHub Actions".
 name: Sitio web
 
 on:
   workflow_dispatch:
+  push:
+    branches: [claude/fluxus-android-build-vvs07k]
+    paths: ['sitio/**', '.github/workflows/sitio.yml']
 
 permissions:
   contents: read
