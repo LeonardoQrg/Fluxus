@@ -14,7 +14,6 @@ on:
       - 'tools/**'
       - 'sitio/**'
       - 'play-build.txt'
-      - '.github/workflows/apk.yml'
       - '.github/workflows/play.yml'
       - '.github/workflows/sitio.yml'
       - '.github/workflows/pruebas.yml'
@@ -51,7 +50,14 @@ jobs:
         run: ./gradlew assembleRelease --no-daemon
         env:
           NODE_ENV: production
+      - name: Guardar el archivo (descarga de respaldo)
+        uses: actions/upload-artifact@v4
+        with:
+          name: fluxus-apk
+          path: android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 30
       - name: Publicar
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
