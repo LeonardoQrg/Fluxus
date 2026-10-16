@@ -9,11 +9,15 @@ type Props = Omit<TextInputProps, 'value' | 'onChangeText'> & {
   onChangeText: (text: string) => void;
   label?: string;
   big?: boolean;
+  /** Texto gris debajo del campo (por defecto: "Se va a guardar $ …") */
+  hint?: string;
+  /** Mensaje de color debajo del campo (reemplaza al texto gris) */
+  message?: { text: string; ok: boolean } | null;
 };
 
 /** Campo de monto: símbolo de la moneda delante y "Se va a guardar $ …" debajo */
 export const AmountField = forwardRef<TextInput, Props>(function AmountField(
-  { currency, value, onChangeText, label = 'Monto', big, ...rest },
+  { currency, value, onChangeText, label = 'Monto', big, hint, ...rest },
   ref,
 ) {
   return (
@@ -28,7 +32,7 @@ export const AmountField = forwardRef<TextInput, Props>(function AmountField(
       inputMode="decimal"
       placeholder={amountPlaceholder(currency)}
       autoComplete="off"
-      hint={amountHint(value, currency) || ' '}
+      hint={hint ?? (amountHint(value, currency) || ' ')}
       {...rest}
     />
   );

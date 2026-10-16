@@ -37,6 +37,16 @@ App Android para controlar el dinero del hogar: cuánto tenés, cuánto entra, c
    `supabase/migrations/`.
 4. Iniciar la app: `npx expo start` y escanear el código QR con **Expo Go** en el celular.
 
+## Actualizar la base de datos de Supabase
+
+Cada vez que se agregan migraciones en `supabase/migrations/`, hay que aplicarlas también en el
+proyecto de Supabase real: pegar en **SQL Editor → Run** el archivo `supabase/actualizar.sql`
+(solo las migraciones nuevas; se genera con `node tools/unir-sql.mjs --desde <número>`).
+`supabase/instalar.sql` es la instalación completa, para un proyecto nuevo.
+
+Estado del proyecto de Supabase real: tiene aplicadas las migraciones hasta la `20261015000003`.
+`actualizar.sql` agrega la `...04` (eliminar cuenta) y la `...05` (ponerme al día / empezar de cero).
+
 ## Generar la app para instalar en Android
 
 Con [EAS Build](https://docs.expo.dev/build/introduction/) (en la nube, no hace falta Android Studio):

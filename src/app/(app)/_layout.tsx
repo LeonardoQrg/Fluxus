@@ -48,6 +48,8 @@ function AppStack({ configured }: { configured: boolean }) {
         <Stack.Screen name="transferir" />
         <Stack.Screen name="movimiento/[id]" />
         <Stack.Screen name="eliminar-cuenta" />
+        <Stack.Screen name="ponerme-al-dia" />
+        <Stack.Screen name="empezar-de-cero" />
       </Stack.Protected>
     </Stack>
   );

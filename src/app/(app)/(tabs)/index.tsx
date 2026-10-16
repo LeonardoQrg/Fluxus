@@ -1,7 +1,8 @@
 // Inicio: dinero disponible, lo que queda libre, ingresos y gastos del mes,
 // accesos para registrar y los últimos movimientos.
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { Button } from '../../../components/Button';
 import { Card } from '../../../components/Card';
@@ -95,6 +96,8 @@ export default function Inicio() {
         <Muted size={14}>Hoy lo que tenés por pagar es más que tu dinero disponible. Verlo claro es el primer paso para ordenarlo.</Muted>
       ) : null}
 
+      <CatchUpTip lastRegistered={f.movements.reduce((max, m) => (m.created_at > max ? m.created_at : max), '')} />
+
       {!f.owe.length && !profile.hide_owe_tip ? <OweTip onHide={() => toast('Lo encontrás siempre en el botón "Por pagar"')} /> : null}
 
       {/* Ingresos y gastos del mes */}
@@ -139,6 +142,46 @@ export default function Inicio() {
 
       <Menu visible={menu} onClose={() => setMenu(false)} />
     </TabScreen>
+  );
+}
+
+const SNOOZE_KEY = 'fluxus.ponerse-al-dia.posponer';
+const DAYS_WITHOUT_ACTIVITY = 7;
+
+/** Aparece cuando pasó una semana o más sin registrar nada: invita a ponerse al día */
+function CatchUpTip({ lastRegistered }: { lastRegistered: string }) {
+  const [snoozed, setSnoozed] = useState(true); // hasta saber si se pospuso, no se muestra
+  const [now] = useState(() => Date.now());
+  useEffect(() => {
+    AsyncStorage.getItem(SNOOZE_KEY)
+      .then((v) => setSnoozed(!!v && new Date(v).getTime() > Date.now()))
+      .catch(() => setSnoozed(false));
+  }, []);
+
+  if (!lastRegistered || snoozed) return null;
+  const days = Math.floor((now - new Date(lastRegistered).getTime()) / 86_400_000);
+  if (days < DAYS_WITHOUT_ACTIVITY) return null;
+
+  return (
+    <View style={{ backgroundColor: soft.accent, borderRadius: 18, padding: 16, gap: 10 }}>
+      <Txt weight="bold">{`Hace ${days} días que no registrás nada`}</Txt>
+      <Txt size={15}>¿Querés ponerte al día? Escribí cuánto hay hoy en cada cuenta y Fluxus se encarga del resto.</Txt>
+      <View style={{ flexDirection: 'row', gap: 12 }}>
+        <Button
+          title="Ahora no"
+          variant="secondary"
+          small
+          style={{ flex: 1 }}
+          onPress={() => {
+            // No vuelve a aparecer durante 3 días
+            const until = new Date(Date.now() + 3 * 86_400_000).toISOString();
+            AsyncStorage.setItem(SNOOZE_KEY, until).catch(() => {});
+            setSnoozed(true);
+          }}
+        />
+        <Button title="Ponerme al día" small style={{ flex: 1 }} onPress={() => router.push('/ponerme-al-dia')} />
+      </View>
+    </View>
   );
 }
 
@@ -270,11 +313,28 @@ function Menu({ visible, onClose }: { visible: boolean; onClose: () => void }) {
             }}
           />
           <Button
+            title="Ponerme al día"
+            variant="secondary"
+            onPress={() => {
+              close();
+              router.push('/ponerme-al-dia');
+            }}
+          />
+          <Button
             title="Cerrar sesión"
             variant="secondary"
             onPress={() => {
               close();
               signOut();
+            }}
+          />
+          <Button
+            title="Empezar de cero"
+            variant="ghost"
+            textColor={colors.expense}
+            onPress={() => {
+              close();
+              router.push('/empezar-de-cero');
             }}
           />
           <Button
