@@ -1,1 +1,3 @@
-Última orden de fabricación: 3 (barra de pestañas corregida)
+Cada vez que este archivo cambia y se sube a GitHub, se fabrica un archivo nuevo (.aab)
+para subir a Google Play (ver .github/workflows/play.yml).
+Última orden de fabricación: 4 (barra de pestañas, montos estilo caja y monedas con símbolo)
