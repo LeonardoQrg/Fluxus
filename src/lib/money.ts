@@ -112,3 +112,36 @@ export function amountPlaceholder(currency: CurrencyCode): string {
   const { decimals, decimalSeparator } = CURRENCIES[currency];
   return decimals ? `0${decimalSeparator}${'0'.repeat(decimals)}` : '0';
 }
+
+/**
+ * Campo de monto "estilo caja": cada cifra entra por la derecha y las demás se corren,
+ * como en el cajero o la app del banco. Escribir 4, 1, 1, 9 en ARS da 41,19.
+ * Devuelve el texto que se guarda en el campo (con el mismo formato que toInputText),
+ * o '' si quedó vacío. `prev` es el texto de antes: sirve para saber si se borró una cifra.
+ */
+export function amountFromDigits(text: string, prev: string, currency: CurrencyCode): string {
+  const all = text.replace(/\D/g, '');
+  if (!all) return '';
+  const stripped = all.replace(/^0+/, '').slice(0, 12);
+  const minor = stripped ? Number(stripped) : 0;
+  const deleted = all.length < prev.replace(/\D/g, '').length;
+  if (minor === 0 && deleted) return '';
+  return toInputText(minor, currency);
+}
+
+/** Lo que se ve en el campo de monto: con separador de miles ("1.234,56") */
+export function amountDisplay(value: string, currency: CurrencyCode): string {
+  if (!value) return '';
+  const minor = parseAmount(value, currency);
+  if (minor === null || Number.isNaN(minor)) return value;
+  const { decimals, decimalSeparator } = CURRENCIES[currency];
+  const thousands = decimalSeparator === ',' ? '.' : ',';
+  const digits = String(Math.abs(minor)).padStart(decimals + 1, '0');
+  const int = digits.slice(0, digits.length - decimals).replace(/\B(?=(\d{3})+(?!\d))/g, thousands);
+  return decimals > 0 ? `${int}${decimalSeparator}${digits.slice(-decimals)}` : int;
+}
+
+/** Ejemplo para mostrar con el símbolo de cada moneda: "$ 0,00", "US$ 0.00", "S/ 0.00" */
+export function currencyExample(currency: CurrencyCode): string {
+  return `${CURRENCIES[currency].symbol} ${amountPlaceholder(currency)}`;
+}

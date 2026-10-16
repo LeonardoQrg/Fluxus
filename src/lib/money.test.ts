@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatMoney, parseAmount, toInputText } from './money';
+import { amountDisplay, amountFromDigits, currencyExample, formatMoney, parseAmount, toInputText } from './money';
 
 // Intl usa espacios especiales (no separables) entre el símbolo y el número
 const plain = (s: string) => s.replace(/[  ]/g, ' ');
@@ -86,5 +86,56 @@ describe('ayudas de los campos de monto', () => {
     expect(amountHint('12a', 'ARS')).toBe('Revisá el número: usá solo cifras');
     expect(amountPlaceholder('ARS')).toBe('0,00');
     expect(amountPlaceholder('CLP')).toBe('0');
+  });
+});
+
+describe('campo de monto estilo caja', () => {
+  const type = (digits: string, currency: 'ARS' | 'USD' | 'CLP') => {
+    let v = '';
+    for (const d of digits) v = amountFromDigits(amountDisplay(v, currency) + d, v, currency);
+    return v;
+  };
+
+  it('las cifras entran por la derecha', () => {
+    expect(type('4', 'ARS')).toBe('0,04');
+    expect(type('41', 'ARS')).toBe('0,41');
+    expect(type('411', 'ARS')).toBe('4,11');
+    expect(type('4119', 'ARS')).toBe('41,19');
+    expect(type('4119', 'USD')).toBe('41.19');
+  });
+
+  it('sin decimales (CLP) escribe unidades', () => {
+    expect(type('1235', 'CLP')).toBe('1235');
+  });
+
+  it('se ve con separador de miles', () => {
+    expect(amountDisplay(type('150050', 'ARS'), 'ARS')).toBe('1.500,50');
+    expect(amountDisplay(type('150050', 'USD'), 'USD')).toBe('1,500.50');
+    expect(amountDisplay(type('1235000', 'CLP'), 'CLP')).toBe('1.235.000');
+    expect(amountDisplay('', 'ARS')).toBe('');
+  });
+
+  it('borrar saca la última cifra y se puede vaciar el campo', () => {
+    // el usuario borra la última cifra de "41,19": el texto queda "41,1"
+    expect(amountFromDigits('41,1', '41,19', 'ARS')).toBe('4,11');
+    expect(amountFromDigits('0,0', '0,01', 'ARS')).toBe('');
+    expect(amountFromDigits('', '0,01', 'ARS')).toBe('');
+  });
+
+  it('se puede escribir un cero y queda como 0,00', () => {
+    expect(amountFromDigits('0', '', 'ARS')).toBe('0,00');
+    expect(parseAmount('0,00', 'ARS')).toBe(0);
+  });
+
+  it('el texto guardado se lee igual que antes', () => {
+    expect(parseAmount(type('4119', 'ARS'), 'ARS')).toBe(4119);
+    expect(parseAmount(type('150050', 'USD'), 'USD')).toBe(150050);
+  });
+
+  it('ejemplos de moneda con su símbolo', () => {
+    expect(currencyExample('ARS')).toBe('$ 0,00');
+    expect(currencyExample('USD')).toBe('US$ 0.00');
+    expect(currencyExample('CLP')).toBe('$ 0');
+    expect(currencyExample('EUR')).toBe('€ 0,00');
   });
 });

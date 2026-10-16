@@ -13,7 +13,7 @@ import { Screen } from '../../components/Screen';
 import { Muted, Title, Txt } from '../../components/Txt';
 import { useAuth, type OnboardingStep } from '../../lib/auth';
 import { call, errorMessage, listAccounts, type Account } from '../../lib/data';
-import { CURRENCIES, CURRENCY_CODES, formatMoney, parseAmount, toInputText, type CurrencyCode } from '../../lib/money';
+import { CURRENCIES, CURRENCY_CODES, currencyExample, formatMoney, parseAmount, toInputText, type CurrencyCode } from '../../lib/money';
 import { colors, soft } from '../../theme';
 
 type Step = Exclude<OnboardingStep, 'done'> | 'cierre';
@@ -197,7 +197,7 @@ function Moneda({
       {progress}
       <StepLabel>Antes de empezar</StepLabel>
       <Title>¿En qué moneda manejás tu dinero?</Title>
-      <Muted>Vamos a mostrar todos los montos en esta moneda, con su formato de puntos y comas.</Muted>
+      <Muted>Vamos a mostrar todos los montos en esta moneda, con su símbolo y su formato.</Muted>
       <View style={{ gap: 8 }} accessibilityRole="radiogroup" accessibilityLabel="Moneda">
         {CURRENCY_CODES.map((c) => {
           const on = c === selected;
@@ -224,7 +224,7 @@ function Moneda({
               </Txt>
               <Txt style={{ flex: 1 }}>{CURRENCIES[c].name}</Txt>
               <Txt size={13} color={colors.textMuted} tabular>
-                {formatMoney(10 ** CURRENCIES[c].decimals * 1234.56, c)}
+                {currencyExample(c)}
               </Txt>
             </Pressable>
           );
