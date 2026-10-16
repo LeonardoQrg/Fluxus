@@ -1,0 +1,3 @@
+Cada vez que este archivo cambia y se sube a GitHub, se fabrica un archivo nuevo (.aab)
+para subir a Google Play (ver .github/workflows/play.yml).
+Última orden de fabricación: 1

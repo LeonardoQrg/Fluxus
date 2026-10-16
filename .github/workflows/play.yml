@@ -1,13 +1,18 @@
 # Fabrica el archivo para subir a Google Play (.aab), firmado con la clave de subida de Fluxus,
 # y lo publica en "Releases" como versión de Play:
 #   github.com/LeonardoQrg/Fluxus/releases
-# Se ejecuta a mano: Actions → "Archivo para Google Play" → Run workflow.
+# Se ejecuta cuando se modifica el archivo play-build.txt (se sube un cambio a ese archivo)
+# o a mano desde Actions → "Archivo para Google Play" → Run workflow (esto último solo
+# funciona si este archivo está en la rama principal del repositorio).
 # Necesita 4 Secrets en GitHub (ver claves/COPIAR-A-GITHUB.txt):
 #   FLUXUS_KEYSTORE_BASE64, FLUXUS_KEYSTORE_PASSWORD, FLUXUS_KEY_ALIAS, FLUXUS_KEY_PASSWORD
 name: Archivo para Google Play
 
 on:
   workflow_dispatch:
+  push:
+    branches: [claude/fluxus-android-build-vvs07k]
+    paths: ['play-build.txt']
 
 permissions:
   contents: write
