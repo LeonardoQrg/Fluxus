@@ -7,7 +7,17 @@ on:
   workflow_dispatch:
   push:
     branches: [claude/fluxus-android-build-vvs07k]
-    paths-ignore: ['**.md', 'docs/**', 'tests/**', 'tools/**']
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'tests/**'
+      - 'tools/**'
+      - 'sitio/**'
+      - 'play-build.txt'
+      - '.github/workflows/apk.yml'
+      - '.github/workflows/play.yml'
+      - '.github/workflows/sitio.yml'
+      - '.github/workflows/pruebas.yml'
 
 permissions:
   contents: write

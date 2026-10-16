@@ -1,6 +1,8 @@
 # Fabrica el archivo para subir a Google Play (.aab), firmado con la clave de subida de Fluxus,
 # y lo publica en "Releases" como versión de Play:
 #   github.com/LeonardoQrg/Fluxus/releases
+# Además, el archivo queda como descarga en la página de la ejecución (Actions → esa ejecución →
+# "Artifacts" → fluxus-para-google-play), por si Releases no lo acepta.
 # Se ejecuta cuando se modifica el archivo play-build.txt (se sube un cambio a ese archivo)
 # o a mano desde Actions → "Archivo para Google Play" → Run workflow (esto último solo
 # funciona si este archivo está en la rama principal del repositorio).
@@ -68,7 +70,14 @@ jobs:
           if keytool -printcert -jarfile "$AAB" | grep -q "Android Debug"; then
             echo "::error::El archivo quedó firmado con la clave de prueba, no con la de Fluxus."; exit 1
           fi
-      - name: Publicar
+      - name: Guardar el archivo para descargarlo desde la página de la ejecución
+        uses: actions/upload-artifact@v4
+        with:
+          name: fluxus-para-google-play
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
+      - name: Publicar en Releases (si GitHub lo permite)
+        continue-on-error: true
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
