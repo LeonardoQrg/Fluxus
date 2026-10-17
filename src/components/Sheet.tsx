@@ -1,4 +1,4 @@
-import { Modal, Pressable, ScrollView, View } from 'react-native';
+import { KeyboardAvoidingView, Modal, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors } from '../theme';
 import { Txt } from './Txt';
@@ -18,6 +18,8 @@ export function Sheet({
   const insets = useSafeAreaInsets();
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose} statusBarTranslucent>
+      {/* El teclado sube el panel para que lo que se escribe siga a la vista */}
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
       <Pressable
         style={{ flex: 1, backgroundColor: 'rgba(8,14,24,0.55)', justifyContent: 'flex-end' }}
         onPress={onClose}
@@ -49,6 +51,7 @@ export function Sheet({
           </ScrollView>
         </Pressable>
       </Pressable>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
